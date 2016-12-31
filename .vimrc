@@ -10,20 +10,25 @@ Plugin 'scrooloose/nerdcommenter'
 Plugin 'scrooloose/nerdtree'
 Plugin 'Xuyuanp/nerdtree-git-plugin'
 Plugin 'airblade/vim-gitgutter'
-Plugin 'valloric/youcompleteme'
-Plugin 'SirVer/ultisnips'
-Plugin 'honza/vim-snippets'
+Plugin 'scrooloose/syntastic'
+Plugin 'shougo/deoplete.nvim'
+Plugin 'Shougo/neosnippet'
+Plugin 'Shougo/neosnippet-snippets'
+"Plugin 'valloric/youcompleteme'
+"Plugin 'SirVer/ultisnips'
+"Plugin 'honza/vim-snippets'
 Plugin 'vim-scripts/DoxygenToolkit.vim'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'mileszs/ack.vim'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'majutsushi/tagbar'
-Plugin 'chiel92/vim-autoformat'
+Plugin 'rhysd/vim-clang-format'
 Plugin 'cohama/lexima.vim'
 Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-fugitive'
 Plugin 'lervag/vimtex'
+Plugin 'junegunn/vim-easy-align'
 call vundle#end()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -135,14 +140,16 @@ set laststatus=2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Make vim understand alt
-let c='a'
-while c <= 'z'
-    exec "set <A-".c.">=\e".c
-    exec "imap \e".c." <A-".c.">"
-    let c = nr2char(1+char2nr(c))
-endw
-set ttimeout ttimeoutlen=50
+" Make vim understand alt (nvim already can!)
+if !has('nvim')
+    let c='a'
+    while c <= 'z'
+        exec "set <A-".c.">=\e".c
+        exec "imap \e".c." <A-".c.">"
+        let c = nr2char(1+char2nr(c))
+    endw
+    set ttimeout ttimeoutlen=50
+endif
 
 " Move a line of text using ALT+[jk] or Command+[jk] on mac
 nnoremap <A-j> :m .+1<CR>==
@@ -151,6 +158,12 @@ inoremap <A-j> <Esc>:m .+1<CR>==gi
 inoremap <A-k> <Esc>:m .-2<CR>==gi
 vnoremap <A-j> :m '>+1<CR>gv=gv
 vnoremap <A-k> :m '<-2<CR>gv=gv
+
+" Move from split windows with ctrl-h/j/k/l
+nnoremap <C-k> :wincmd k<CR>
+nnoremap <C-j> :wincmd j<CR>
+nnoremap <C-h> :wincmd h<CR>
+nnoremap <C-l> :wincmd l<CR>
 
 map <leader>d :NERDTreeToggle<cr>
 
@@ -180,30 +193,67 @@ let g:airline_theme='solarized'
 """"""""""""""""""""""""""""""""""""""""""
 " => Autoformat
 """"""""""""""""""""""""""""""""""""""""""
-" Autoformat style for c
-let g:formatdef_astyle_c = '"astyle --mode=c --style=gnu -pcHs2"'
-let g:formatters_c = ['astyle_c']
+"Clang-format mappings
+noremap <leader>f :ClangFormat<CR>
+noremap <leader>af :ClangFormatAutoToggle<CR>
 
-"Autoformat mappings
-noremap <leader>f :Autoformat<CR>
+"let g:clang_format#auto_format_on_insert_leave = 1
+let g:clang_format#auto_format = 1
+""""""""""""""""""""""""""""""""""""""""""
+" => Syntastic
+""""""""""""""""""""""""""""""""""""""""""
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
 
-" Autoformat on save
-"au BufWrite * :Autoformat
-""""""""""""""""""""""""""""""""""""""""""
-" => YouCompleteMe
-""""""""""""""""""""""""""""""""""""""""""
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+"
+" Use deoplete.
+let g:deoplete#enable_at_startup = 1
+
+"""""""""""""""""""""
+" NEOSNIPPETS
+"""""""""""""""""""""
+" Plugin key-mappings.
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
+
+" use tab to forward cycle
+inoremap <silent><expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
+" use tab to backward cycle
+inoremap <silent><expr><s-tab> pumvisible() ? "\<c-p>" : "\<s-tab>"
+
+" SuperTab like snippets behavior.
+"imap <expr><TAB>
+" \ pumvisible() ? "\<C-n>" :
+" \ neosnippet#expandable_or_jumpable() ?
+" \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+
+" For conceal markers.
+if has('conceal')
+  set conceallevel=2 concealcursor=niv
+endif
+
+
 " Make Eclim play nice with YouCompleteMe
-let g:EclimCompletionMethod = 'omnifunc'
+"let g:EclimCompletionMethod = 'omnifunc'
 
 "Youcompleteme fix
-let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/youcompleteme/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py'
+"let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/youcompleteme/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py'
 
 " Some settings
-let g:ycm_autoclose_preview_window_after_insertion = 1
-map <F2> :YcmCompleter GoTo<CR>
-let g:ycm_extra_conf_globlist = ['~/ioopm/*']
+"let g:ycm_autoclose_preview_window_after_insertion = 1
+"map <F2> :YcmCompleter GoTo<CR>
+"let g:ycm_extra_conf_globlist = ['~/ioopm/*']
+"map <leader>yf :YcmCompleter FixIt<CR>
 
-let g:ycm_key_invoke_completion = '<C-Space>'
+"let g:ycm_key_invoke_completion = '<C-Space>'
 
 """"""""""""""""""""""""""""""""""""""""""
 " => Other plugin config
