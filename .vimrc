@@ -6,6 +6,7 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'tpope/vim-surround'
 Plugin 'altercation/vim-colors-solarized'
+Plugin 'chriskempson/base16-vim'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'scrooloose/nerdtree'
 Plugin 'Xuyuanp/nerdtree-git-plugin'
@@ -14,9 +15,6 @@ Plugin 'scrooloose/syntastic'
 Plugin 'shougo/deoplete.nvim'
 Plugin 'Shougo/neosnippet'
 Plugin 'Shougo/neosnippet-snippets'
-"Plugin 'valloric/youcompleteme'
-"Plugin 'SirVer/ultisnips'
-"Plugin 'honza/vim-snippets'
 Plugin 'vim-scripts/DoxygenToolkit.vim'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
@@ -29,6 +27,9 @@ Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-fugitive'
 Plugin 'lervag/vimtex'
 Plugin 'junegunn/vim-easy-align'
+Plugin 'othree/html5.vim'
+Plugin 'posva/vim-vue'
+Plugin 'mattn/emmet-vim'
 call vundle#end()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -96,8 +97,8 @@ set magic
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enable syntax highlighting and set color scheme
 syntax enable
-set background=light
-colorscheme solarized
+"set background=light
+colorscheme base16-default-dark
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Text, tab and indent related
@@ -189,7 +190,9 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
 
-let g:airline_theme='solarized'
+let g:airline_powerline_fonts = 1
+
+let g:airline_theme='base16'
 """"""""""""""""""""""""""""""""""""""""""
 " => Autoformat
 """"""""""""""""""""""""""""""""""""""""""
@@ -207,7 +210,6 @@ set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
 let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 "
@@ -218,9 +220,9 @@ let g:deoplete#enable_at_startup = 1
 " NEOSNIPPETS
 """""""""""""""""""""
 " Plugin key-mappings.
-imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-xmap <C-k>     <Plug>(neosnippet_expand_target)
+imap <C-j>     <Plug>(neosnippet_expand_or_jump)
+smap <C-j>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-j>     <Plug>(neosnippet_expand_target)
 
 " use tab to forward cycle
 inoremap <silent><expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
@@ -228,6 +230,8 @@ inoremap <silent><expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 inoremap <silent><expr><s-tab> pumvisible() ? "\<c-p>" : "\<s-tab>"
 
 " SuperTab like snippets behavior.
+" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 "imap <expr><TAB>
 " \ pumvisible() ? "\<C-n>" :
 " \ neosnippet#expandable_or_jumpable() ?
@@ -260,6 +264,7 @@ endif
 """"""""""""""""""""""""""""""""""""""""""
 " Insert snippet on Ctrl-J
 let g:UltiSnipsExpandTrigger='<C-j>'
+imap <C-k>   <c-y>,
 
 " Multi cursor mappings
 let g:multi_cursor_use_default_mapping=0
@@ -270,3 +275,4 @@ let g:multi_cursor_quit_key='<Esc>'
 
 " Tagbar key map
 nmap <leader>tb :TagbarToggle<CR>
+

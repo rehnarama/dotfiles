@@ -6,23 +6,28 @@ source /usr/share/zsh/scripts/antigen/antigen.zsh
 antigen use oh-my-zsh
 
 #Use homemade agnoster theme for solarized light
-antigen theme https://gist.github.com/anonymous/053976332c1053782789900255a25ec8 agnoster
+antigen theme agnoster #https://gist.github.com/anonymous/053976332c1053782789900255a25ec8 agnoster
 
 antigen bundle git
 antigen bundle git-extras
 antigen bundle zsh-users/zsh-syntax-highlighting
 antigen bundle npm
-antigen bundle vi-mode
 antigen bundle common-aliases
+antigen bundle vi-mode
 
 antigen apply
 
 ###################################
 # General
 ###################################
-PATH=~/bin:~/.gem/ruby/2.3.0/bin:$PATH
+PATH=~/.bin:~/.gem/ruby/2.3.0/bin:$PATH
+
+# Enables vi-mode
+#bindkey -v
 
 eval `dircolors ~/.dir_colors/dircolors`
+
+export DEFAULT_USER=michael
 ###################################
 # Sources
 ###################################
@@ -49,7 +54,7 @@ alias installera='yaourt --noconfirm'
 # Exit vi-style
 alias :q=exit
 
-alias vim='vim --servername VIM'
+alias vim=nvim
 ###################################
 # Installation lines
 ###################################
@@ -68,3 +73,6 @@ autoload -Uz compinit
 # Should fix so that terminal new tab opens in same dir... But doesn't...
 . /etc/profile.d/vte.sh
 __vte_osc7
+
+# added by travis gem
+[ -f /home/michael/.travis/travis.sh ] && source /home/michael/.travis/travis.sh
