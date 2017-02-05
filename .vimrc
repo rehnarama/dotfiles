@@ -97,8 +97,8 @@ set magic
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enable syntax highlighting and set color scheme
 syntax enable
-"set background=light
-colorscheme base16-default-dark
+set background=light
+colorscheme solarized
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Text, tab and indent related
@@ -192,7 +192,7 @@ let g:airline#extensions#tabline#left_alt_sep = '|'
 
 let g:airline_powerline_fonts = 1
 
-let g:airline_theme='base16'
+let g:airline_theme='solarized'
 """"""""""""""""""""""""""""""""""""""""""
 " => Autoformat
 """"""""""""""""""""""""""""""""""""""""""

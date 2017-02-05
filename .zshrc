@@ -1,12 +1,12 @@
 ###################################
 # Antigen
 ###################################
-source /usr/share/zsh/scripts/antigen/antigen.zsh
+source ~/.bin/antigen.zsh
 
 antigen use oh-my-zsh
 
 #Use homemade agnoster theme for solarized light
-antigen theme agnoster #https://gist.github.com/anonymous/053976332c1053782789900255a25ec8 agnoster
+antigen theme https://gist.github.com/anonymous/053976332c1053782789900255a25ec8 agnoster
 
 antigen bundle git
 antigen bundle git-extras
@@ -20,22 +20,14 @@ antigen apply
 ###################################
 # General
 ###################################
-PATH=~/.bin:~/.gem/ruby/2.3.0/bin:$PATH
+PATH=~/.bin:$PATH
 
 # Enables vi-mode
 #bindkey -v
 
-eval `dircolors ~/.dir_colors/dircolors`
-
-export DEFAULT_USER=michael
 ###################################
 # Sources
 ###################################
-# Sources in __git_ps1
-source /usr/share/git/completion/git-prompt.sh
-
-# Sources in antelope aliases
-source /home/michael/.antelopealias
 ###################################
 # Exports
 ###################################
@@ -48,9 +40,6 @@ export EDITOR=vim
 ###################################
 # Aliases
 ###################################
-# Quick install alias
-alias installera='yaourt --noconfirm'
-
 # Exit vi-style
 alias :q=exit
 
@@ -70,9 +59,9 @@ autoload -Uz compinit
 #compinit
 # End of lines added by compinstall
 
-# Should fix so that terminal new tab opens in same dir... But doesn't...
-. /etc/profile.d/vte.sh
-__vte_osc7
+if [ $TERMINIX_ID ] || [ $VTE_VERSION ]; then
+        source /etc/profile.d/vte.sh
+fi
 
 # added by travis gem
 [ -f /home/michael/.travis/travis.sh ] && source /home/michael/.travis/travis.sh
