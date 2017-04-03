@@ -29,18 +29,12 @@ source ~/.vi_mode.zsh
 ###################################
 PATH=~/.bin:$PATH
 
-# Enables vi-mode
-#bindkey -v
-
 ###################################
 # Sources
 ###################################
 ###################################
 # Exports
 ###################################
-# Fixes meteor mongod
-export LC_ALL=en_GB.UTF-8
-
 # Uses vim as default editor
 export EDITOR=vim
 
@@ -61,9 +55,9 @@ HISTSIZE=1000
 SAVEHIST=1000
 # End of lines configured by zsh-newuser-install
 # The following lines were added by compinstall
-zstyle :compinstall filename '/home/michael/.zshrc'
+#zstyle :compinstall filename '/home/michael/.zshrc'
 
-autoload -Uz compinit
+#autoload -Uz compinit
 #compinit
 # End of lines added by compinstall
 
