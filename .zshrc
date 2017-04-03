@@ -1,22 +1,29 @@
+export TERM="xterm-256color"
+export POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(background_jobs context dir vcs)
+export POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status rbenv virtualenv vi_mode)
+export POWERLEVEL9K_PROMPT_ON_NEWLINE=true
+export POWERLEVEL9K_MODE='awesome-fontconfig'
+export KEYTIMEOUT=1 #Reduces lag when switching vi mode
 ###################################
-# Antigen
+# ZGEN
 ###################################
-source ~/.bin/antigen.zsh
+source ~/.zgen/zgen.zsh
 
-antigen use oh-my-zsh
+if ! zgen saved; then
+	zgen oh-my-zsh
 
-#Use homemade agnoster theme for solarized light
-antigen theme https://gist.github.com/anonymous/053976332c1053782789900255a25ec8 agnoster
+	zgen oh-my-zsh plugins/git
+	zgen oh-my-zsh plugins/common-aliases
+	zgen oh-my-zsh plugins/vi-mode
 
-antigen bundle git
-antigen bundle git-extras
-antigen bundle zsh-users/zsh-syntax-highlighting
-antigen bundle npm
-antigen bundle common-aliases
-antigen bundle vi-mode
+	zgen load bhilburn/powerlevel9k powerlevel9k
+	zgen load zsh-users/zsh-syntax-highlighting
+	zgen load joel-porquet/zsh-dircolors-solarized.git
 
-antigen apply
-
+	zgen save
+fi
+# Fix for powerlevel9k vi_mode indicator
+source ~/.vi_mode.zsh
 ###################################
 # General
 ###################################
@@ -37,13 +44,14 @@ export LC_ALL=en_GB.UTF-8
 # Uses vim as default editor
 export EDITOR=vim
 
+export DEFAULT_USER=michael
+
 ###################################
 # Aliases
 ###################################
 # Exit vi-style
 alias :q=exit
 
-alias vim=nvim
 ###################################
 # Installation lines
 ###################################
@@ -63,5 +71,3 @@ if [ $TERMINIX_ID ] || [ $VTE_VERSION ]; then
         source /etc/profile.d/vte.sh
 fi
 
-# added by travis gem
-[ -f /home/michael/.travis/travis.sh ] && source /home/michael/.travis/travis.sh
