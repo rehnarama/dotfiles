@@ -1,8 +1,4 @@
 export TERM="xterm-256color"
-export POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(background_jobs context dir vcs)
-export POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status rbenv virtualenv vi_mode)
-export POWERLEVEL9K_PROMPT_ON_NEWLINE=true
-export POWERLEVEL9K_MODE='awesome-fontconfig'
 export KEYTIMEOUT=1 #Reduces lag when switching vi mode
 ###################################
 # ZGEN
@@ -10,20 +6,22 @@ export KEYTIMEOUT=1 #Reduces lag when switching vi mode
 source ~/.zgen/zgen.zsh
 
 if ! zgen saved; then
-	zgen oh-my-zsh
+    zgen oh-my-zsh
 
-	zgen oh-my-zsh plugins/git
-	zgen oh-my-zsh plugins/common-aliases
-	zgen oh-my-zsh plugins/vi-mode
+    zgen oh-my-zsh plugins/git
+    zgen oh-my-zsh plugins/common-aliases
+    zgen oh-my-zsh plugins/vi-mode
 
-	zgen load bhilburn/powerlevel9k powerlevel9k
-	zgen load zsh-users/zsh-syntax-highlighting
-	zgen load joel-porquet/zsh-dircolors-solarized.git
+    zgen load denysdovhan/spaceship-zsh-theme spaceship
+    #zgen load bhilburn/powerlevel9k powerlevel9k
+    zgen load zsh-users/zsh-syntax-highlighting
+    zgen load joel-porquet/zsh-dircolors-solarized.git
 
 	zgen save
 fi
-# Fix for powerlevel9k vi_mode indicator
-source ~/.vi_mode.zsh
+
+source ~/.spaceship-theme
+
 ###################################
 # General
 ###################################
@@ -46,6 +44,25 @@ export DEFAULT_USER=michael
 # Exit vi-style
 alias :q=exit
 
+###################################
+# Tmux
+###################################
+if [ -z "$TMUX" ]; then
+    base_session='main'
+    # Create a new session if it doesn't exist
+    tmux has-session -t $base_session || tmux new-session -d -s $base_session
+    # Are there any clients connected already?
+    client_cnt=$(tmux list-clients | wc -l)
+    if [ $client_cnt -ge 1 ]; then
+        session_name=$base_session"-"$client_cnt
+        tmux new-session -d -s $session_name
+        tmux -2 attach-session -t $session_name \; set-option destroy-unattached
+        builtin exit
+    else
+        tmux -2 attach-session -t $base_session
+        builtin exit
+    fi
+fi
 ###################################
 # Installation lines
 ###################################
