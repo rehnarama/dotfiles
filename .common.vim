@@ -80,7 +80,7 @@ set guioptions-=L  "remove left-hand scroll bar
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enable syntax highlighting and set color scheme
 syntax enable
-set background=light
+set background=dark
 colorscheme solarized
 
 if has('gui_running')
