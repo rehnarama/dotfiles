@@ -13,7 +13,6 @@ if ! zgen saved; then
     zgen oh-my-zsh plugins/vi-mode
 
     zgen load denysdovhan/spaceship-zsh-theme spaceship
-    #zgen load bhilburn/powerlevel9k powerlevel9k
     zgen load zsh-users/zsh-syntax-highlighting
     zgen load joel-porquet/zsh-dircolors-solarized.git
 
