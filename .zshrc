@@ -1,8 +1,10 @@
-export TERM="xterm-256color"
+#export TERM="xterm-256color"
+export PURE_PROMPT_SYMBOL=">"
 export KEYTIMEOUT=1 #Reduces lag when switching vi mode
 ###################################
 # ZGEN
 ###################################
+
 source ~/.zgen/zgen.zsh
 
 if ! zgen saved; then
@@ -12,14 +14,14 @@ if ! zgen saved; then
     zgen oh-my-zsh plugins/common-aliases
     zgen oh-my-zsh plugins/vi-mode
 
-    zgen load denysdovhan/spaceship-zsh-theme spaceship
+    zgen load mafredri/zsh-async
+    zgen load marszall87/lambda-pure
+    #zgen load denysdovhan/spaceship-zsh-theme spaceship
     zgen load zsh-users/zsh-syntax-highlighting
     zgen load joel-porquet/zsh-dircolors-solarized.git
 
 	zgen save
 fi
-
-source ~/.spaceship-theme
 
 ###################################
 # General
