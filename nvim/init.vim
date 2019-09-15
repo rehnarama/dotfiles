@@ -1,9 +1,16 @@
 
-let plugdir = '~/.config/nvim/plugged'
-if (has('win32'))
-  plugdir = '$LOCALAPPDATA/nvim/plugged'
-endif
+function GetPlugDir()
+  if (has('win32'))
+    return '$LOCALAPPDATA/nvim/plugged'
+  else
+    return  '~/.config/nvim/plugged'
+  endif
+endfunction
+
+let plugdir = GetPlugDir()
+
 call plug#begin(plugdir)
+
 
 " Make sure you use single quotes
 
@@ -106,8 +113,10 @@ set colorcolumn=80
 set wildignore=.git,node_modules,.meteor,*.min.*,OneDrive
 
 " Wild menu uses popup menu, which is a bit blended
-set wildoptions=pum
-set pumblend=15
+if has('nvim-0.4')
+  set wildoptions=pum
+  set pumblend=15
+endif
 
 " Split on the other side
 set splitbelow
