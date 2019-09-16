@@ -10,8 +10,6 @@ endfunction
 let plugdir = GetPlugDir()
 
 call plug#begin(plugdir)
-
-
 " Make sure you use single quotes
 
 " Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
@@ -33,11 +31,7 @@ Plug 'tpope/vim-repeat'
 " An improved netrw fork 
 Plug 'tpope/vim-vinegar'
 
-" For finding files
-Plug 'Shougo/denite.nvim'
-
 " Linting and LSP
-" Plug 'w0rp/ale'
 Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
 
 " Editorconfig plugin
@@ -59,6 +53,7 @@ call plug#end()
 set termguicolors
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 set background=light
+set guifont=Fira\ Code:h14
 
 " Set colorscheme 
 colorscheme NeoSolarized
@@ -213,29 +208,6 @@ xmap ga <Plug>(LiveEasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(LiveEasyAlign)
 
-""""""""""" Denite configuration
-" Opens buffer picker and file picker with ctrl+p
-nmap <C-p> :Denite buffer file/rec<CR>
-
-" For file picker, use ripgrep
-call denite#custom#var('file/rec', 'command',
-  \ ['rg', '--files'])
-
-" For grep, use ripgrep
-call denite#custom#var('grep', 'command', ['rg'])
-call denite#custom#var('grep', 'default_opts',
-		\ ['-i', '--vimgrep', '--no-heading'])
-call denite#custom#var('grep', 'recursive_opts', [])
-call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
-call denite#custom#var('grep', 'separator', ['--'])
-call denite#custom#var('grep', 'final_opts', [])
-
-" When browsing denite entries, press escape to enter 'normal mode'
-call denite#custom#map(
-	      \ 'insert',
-	      \ '<Esc>',
-	      \ '<denite:enter_mode:normal>',
-	      \)
 
 if ($WAYLAND_DISPLAY) 
   let g:clipboard = {
