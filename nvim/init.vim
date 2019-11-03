@@ -41,6 +41,9 @@ Plug 'sheerun/vim-polyglot'
 
 Plug 'christoomey/vim-tmux-navigator'
 
+Plug 'https://github.com/junegunn/fzf'
+Plug 'junegunn/fzf.vim'
+
 " Initialize plugin system
 call plug#end()
 
