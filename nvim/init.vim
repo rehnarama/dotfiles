@@ -37,12 +37,7 @@ Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
 " Editorconfig plugin
 Plug 'editorconfig/editorconfig-vim'
 
-" rust support
-Plug 'rust-lang/rust.vim'
-
-" ts/js support
-Plug 'leafgarland/typescript-vim'
-Plug 'peitalin/vim-jsx-typescript'
+Plug 'sheerun/vim-polyglot'
 
 Plug 'christoomey/vim-tmux-navigator'
 
