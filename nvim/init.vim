@@ -53,7 +53,7 @@ call plug#end()
 set termguicolors
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 set background=light
-set guifont=Fira\ Code:h14
+set guifont=Cascadia\ Code:h13
 
 " Set colorscheme 
 colorscheme NeoSolarized
