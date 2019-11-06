@@ -120,6 +120,13 @@ set splitright
 " Key bind make -s
 nmap <leader>mk :make -s<cr>
 
+" Unfortunately, to enable markdown folding we have to put this here
+" Since it doesn't work to put it in ftplugin markdown for some reason
+let g:markdown_folding=1
+
+" Start with no folds closed
+set foldlevelstart=99
+
 """"""""""" Coc configuration
 
 
