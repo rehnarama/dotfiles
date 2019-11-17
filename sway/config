@@ -20,6 +20,16 @@ set $term kitty
 set $menu GDK_BACKEND=wayland ulauncher
 for_window [app_id=ulauncher] border none
 
+# Float the sound control window
+for_window [app_id=pavucontrol] floating enable
+
+# Execute mako, a notification daemon for wayland
+exec makexec mako
+
+# Launch kde-connect as floating window
+for_window [app_id=org.kde.kdeconnect-indicator] floating enable
+exec QT_QPA_PLATFORM=wayland kdeconnect-indicator
+
 # Pixel border around windows, no title bar
 default_border pixel
 
@@ -44,11 +54,24 @@ output eDP-1 scale 2
 #
 # Example configuration:
 #
+set $lock swaylock \
+	--screenshots \
+	--clock \
+	--indicator \
+	--indicator-radius 100 \
+	--indicator-thickness 7 \
+	--effect-blur 7x5 \
+	--ring-color bb00cc \
+	--key-hl-color 880033 \
+	--line-color 00000000 \
+	--inside-color 00000088 \
+	--separator-color 00000000
+
 exec swayidle -w \
-         timeout 300 'swaylock -f -c 000000' \
+         timeout 300 '$lock -f -c 000000' \
          timeout 600 'swaymsg "output * dpms off"' \
               resume 'swaymsg "output * dpms on"' \
-         before-sleep 'swaylock -f -c 000000'
+         before-sleep '$lock -f -c 000000'
 #
 # This will lock your screen after 300 seconds of inactivity, then turn off
 # your displays after another 300 seconds, and turn your screens back on when
@@ -87,7 +110,7 @@ input "1739:30381:DLL0665:01_06CB:76AD_Touchpad" {
 
     # Start your launcher
     bindsym $mod+d exec $menu
-
+    bindsym $mod+p exec $lock
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
     # Despite the name, also works for non-floating windows.
