@@ -17,7 +17,7 @@ set $right l
 set $term kitty
 # Your preferred application launcher
 # Note: it's recommended that you pass the final command to sway
-set $menu GDK_BACKEND=wayland ulauncher
+set $menu QT_QPA_PLATFORM=wayland GDK_BACKEND=wayland ulauncher
 for_window [app_id=ulauncher] border none
 
 # Float the sound control window
@@ -253,5 +253,14 @@ bindsym $mod+r mode "resize"
 bar {
     swaybar_command waybar
 }
+
+# class                 border  backgr. text    indicator child_border
+client.focused           #be5046 #be5046 #be5046 #be5046   #be5046
+client.focused_inactive  #5c6370 #3b3228 #ffffff #5c6370   #5c6370
+client.unfocused         #5c6370 #3b3228 #ffffff #5c6370   #5c6370
+#client.urgent            #cb6077 #3b3228 #ffffff #cb6077   #cb6077
+#client.placeholder      #000000 #3b3228 #ffffff #000000   #0c0c0c
+
+#client.background 	#fffffff
 
 include /etc/sway/config.d/*
