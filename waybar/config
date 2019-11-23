@@ -50,7 +50,8 @@
       "warning": 25,
       "critical": 10
     },
-    "tooltip": false
+    "tooltip": false,
+    "bat": "BAT0"
   },
   "network": {
     "format": "{essid} {icon} {signalStrength}%",
