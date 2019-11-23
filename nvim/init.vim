@@ -127,6 +127,11 @@ let g:markdown_folding=1
 " Start with no folds closed
 set foldlevelstart=99
 
+""""""""""" FZF config
+
+nmap <C-p> :Files<cr>
+nmap <C-l> :Buffers<cr>
+
 """"""""""" Coc configuration
 
 
@@ -228,3 +233,5 @@ if ($WAYLAND_DISPLAY)
       \   'cache_enabled': 0,
       \ }
 endif
+
+command! -nargs=0 Prettier :CocCommand prettier.formatFile
