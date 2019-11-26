@@ -38,6 +38,10 @@ Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
 Plug 'editorconfig/editorconfig-vim'
 
 Plug 'sheerun/vim-polyglot'
+Plug 'lervag/vimtex'
+
+" Snippets are separated from the engine. Add this if you want them:
+Plug 'honza/vim-snippets'
 
 Plug 'https://github.com/junegunn/fzf'
 Plug 'junegunn/fzf.vim'
@@ -100,6 +104,10 @@ augroup END
 " Set a colored column at column 80
 set colorcolumn=80
 
+set wrap
+set linebreak
+set textwidth=80
+
 " Ignore setting
 set wildignore=.git,node_modules,.meteor,*.min.*,OneDrive
 
@@ -124,6 +132,24 @@ let g:markdown_folding=1
 
 " Start with no folds closed
 set foldlevelstart=99
+
+let g:vimtex_view_general_viewer = 'SumatraPDF'
+let g:vimtex_view_general_options
+      \ = '-reuse-instance -forward-search @tex @line @pdf'
+let g:vimtex_view_general_options_latexmk = '-reuse-instance'
+
+
+""""""""""" Polyglot settings
+" I'd rather use vimtex than latex-box which is included in polyglot
+" So let's disable polyglots latex support
+let g:polyglot_disabled = ['latex']
+
+""""""""""" UltiSnips config
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+"let g:UltiSnipsExpandTrigger="<tab>"
+"let g:UltiSnipsJumpForwardTrigger="<c-b>"
+"let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
 
 """"""""""" FZF config
 
