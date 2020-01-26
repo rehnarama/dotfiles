@@ -46,14 +46,24 @@ Plug 'honza/vim-snippets'
 Plug 'https://github.com/junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 
+
+Plug 'itchyny/lightline.vim'
+
 " Initialize plugin system
 call plug#end()
+
 
 " Report that we have true color terminal
 set termguicolors
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 set background=light
 set guifont=Cascadia\ Code:h13
+
+"""""""""""""""""" lightline
+let g:lightline = {
+      \ 'colorscheme': 'solarized',
+      \ }
+""""""""""""""""""
 
 " Set colorscheme 
 colorscheme NeoSolarized
@@ -71,8 +81,14 @@ set backupcopy=yes
 let mapleader = ","
 let maplocalleader = ","
 
+nnoremap <leader>cd :cd %:p:h<CR>
+
 " Remove highlight with leader+enter
 nnoremap <leader><CR> :noh<CR>
+
+" Make scrolling happen when 5 characters from top/bottom/left/right
+set scrolloff=5
+set sidescrolloff=5
 
 " Use hidden buffers
 set hidden
@@ -235,6 +251,8 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
+command! -nargs=0 Prettier :CocCommand prettier.formatFile
+
 """"""""""" Easy align configuration
 " Start interactive EasyAlign in visual mode (e.g. vipga)
 xmap ga <Plug>(LiveEasyAlign)
@@ -257,5 +275,3 @@ if ($WAYLAND_DISPLAY)
       \   'cache_enabled': 0,
       \ }
 endif
-
-command! -nargs=0 Prettier :CocCommand prettier.formatFile
