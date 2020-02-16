@@ -48,7 +48,7 @@ gaps inner 8
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg /home/michael/Pictures/bg.jpg fill
+output * bg $HOME/Pictures/bg.jpg fill
 #
 # Example configuration:
 #
