@@ -58,9 +58,7 @@ output * bg $HOME/Pictures/bg.jpg fill
 output eDP-1 scale 2
 
 ### Idle configuration
-#
-# Example configuration:
-#
+# requires swaylock-effects (https://github.com/mortie/swaylock-effects)
 set $lock swaylock \
 	--screenshots \
 	--clock \
