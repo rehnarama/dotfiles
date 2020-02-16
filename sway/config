@@ -98,7 +98,7 @@ exec swayidle -w \
 # You can get the names of your inputs by running: swaymsg -t get_inputs
 # Read `man 5 sway-input` for more information about this section.
 input * xkb_layout se
-input "1739:30381:DLL0665:01_06CB:76AD_Touchpad" {
+input "2:7:SynPS/2_Synaptics_TouchPad" {
     dwt enabled
     tap enabled
     natural_scroll enabled
