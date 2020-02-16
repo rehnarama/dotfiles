@@ -46,9 +46,6 @@ Plug 'honza/vim-snippets'
 Plug 'https://github.com/junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 
-
-Plug 'itchyny/lightline.vim'
-
 " Initialize plugin system
 call plug#end()
 
@@ -59,11 +56,6 @@ let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 set background=light
 set guifont=Cascadia\ Code:h13
 
-"""""""""""""""""" lightline
-let g:lightline = {
-      \ 'colorscheme': 'solarized',
-      \ }
-""""""""""""""""""
 
 " Set colorscheme 
 colorscheme NeoSolarized
