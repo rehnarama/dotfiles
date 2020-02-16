@@ -106,6 +106,9 @@ input "2:7:SynPS/2_Synaptics_TouchPad" {
     scroll_factor 0.3
 }
 
+output eDP-1 position 0,0
+output DP-2 position 1920,0 scale 2
+
 ### Key bindings
 #
 # Basics:
