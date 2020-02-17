@@ -93,7 +93,9 @@ set sidescrolloff=5
 " Use hidden buffers
 set hidden
 
-" Overrides ignore case if mathing case
+" Ignore casing in search/replace/etc.
+set ignorecase
+" Overrides ignore case if it contains upper case character
 set smartcase
 
 " Allow hidden buffers
@@ -188,6 +190,9 @@ set signcolumn=yes
 " Use <c-space> for trigger completion.
 inoremap <silent><expr> <c-space> coc#refresh()
 
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+" Coc only does snippet and additional edit on confirm.
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 " Use `[c` and `]c` for navigate diagnostics
 nmap <silent> [c <Plug>(coc-diagnostic-prev)
