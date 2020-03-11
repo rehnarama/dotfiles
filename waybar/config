@@ -1,6 +1,6 @@
 {
-  "layer": "bottom",
-  "position": "top",
+  "layer": "top",
+  "position": "bottom",
   "height": 30,
   "modules-left": [
     "sway/workspaces",
@@ -44,7 +44,7 @@
       "",
       ""
     ],
-    "format-charging": "{capacity}% ",
+    "format-charging": "{capacity}% ",
     "interval": 30,
     "states": {
       "warning": 25,
@@ -65,7 +65,7 @@
         ""
       ],
       "disconnected": [
-        ""
+        ""
       ]
     },
     "on-click": "kitty -e nmtui",
