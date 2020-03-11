@@ -131,6 +131,8 @@ endif
 set splitbelow
 set splitright
 
+set mouse=a
+
 "let g:tmux_navigator_no_mappings = 1
 
 " Key bind make -s
