@@ -161,12 +161,6 @@ fi
 " So let's disable polyglots latex support
 let g:polyglot_disabled = ['latex']
 
-""""""""""" UltiSnips config
-" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-"let g:UltiSnipsExpandTrigger="<tab>"
-"let g:UltiSnipsJumpForwardTrigger="<c-b>"
-"let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-
 
 """"""""""" FZF config
 
