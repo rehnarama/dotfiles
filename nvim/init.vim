@@ -145,10 +145,15 @@ let g:markdown_folding=1
 " Start with no folds closed
 set foldlevelstart=99
 
-let g:vimtex_view_general_viewer = 'SumatraPDF'
-let g:vimtex_view_general_options
-      \ = '-reuse-instance -forward-search @tex @line @pdf'
-let g:vimtex_view_general_options_latexmk = '-reuse-instance'
+if has('win32')
+  let g:vimtex_view_general_viewer = 'SumatraPDF'
+  let g:vimtex_view_general_options
+        \ = '-reuse-instance -forward-search @tex @line @pdf'
+  let g:vimtex_view_general_options_latexmk = '-reuse-instance'
+fi
+if has('unix')
+  let g:vimtex_view_general_viewer = 'evince'
+fi
 
 
 """"""""""" Polyglot settings
