@@ -258,18 +258,3 @@ xmap ga <Plug>(LiveEasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(LiveEasyAlign)
 
-
-if ($WAYLAND_DISPLAY) 
-  let g:clipboard = {
-      \   'name': 'wayland',
-      \   'copy': {
-      \      '+': 'wl-copy',
-      \      '*': 'wl-copy',
-      \    },
-      \   'paste': {
-      \      '+': 'wl-paste -n',
-      \      '*': 'wl-paste -n',
-      \   },
-      \   'cache_enabled': 0,
-      \ }
-endif
