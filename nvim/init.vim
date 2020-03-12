@@ -17,7 +17,7 @@ Plug 'junegunn/vim-easy-align'
 
 " For nice colours
 Plug 'iCyMind/NeoSolarized'
-Plug 'soft-aesthetic/soft-era-vim'
+Plug 'nightsense/vimspectr'
 
 " For easier (de)surrounding of text objects with operators
 Plug 'tpope/vim-surround'
@@ -58,7 +58,7 @@ set guifont=Cascadia\ Code:h13
 
 
 " Set colorscheme 
-colorscheme NeoSolarized
+colorscheme vimspectr330-light
 
 " So that we exit terminal-mode with escape
 tnoremap <Esc> <C-\><C-n>
