@@ -150,10 +150,10 @@ if has('win32')
   let g:vimtex_view_general_options
         \ = '-reuse-instance -forward-search @tex @line @pdf'
   let g:vimtex_view_general_options_latexmk = '-reuse-instance'
-fi
+endif
 if has('unix')
   let g:vimtex_view_general_viewer = 'evince'
-fi
+endif
 
 
 """"""""""" Polyglot settings
