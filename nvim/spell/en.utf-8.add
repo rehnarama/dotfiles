@@ -18,4 +18,6 @@ Lua
 LuAT
 offline
 unboundedly
+broadcasted
+middlewares
 CRDT
