@@ -43,8 +43,10 @@ Plug 'lervag/vimtex'
 " Snippets are separated from the engine. Add this if you want them:
 Plug 'honza/vim-snippets'
 
-Plug 'https://github.com/junegunn/fzf'
+Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
+
+Plug 'rhysd/vim-grammarous'
 
 " Initialize plugin system
 call plug#end()
@@ -58,7 +60,7 @@ set guifont=Cascadia\ Code:h13
 
 
 " Set colorscheme 
-colorscheme vimspectr330-light
+colorscheme NeoSolarized
 
 " So that we exit terminal-mode with escape
 tnoremap <Esc> <C-\><C-n>
@@ -147,9 +149,15 @@ set foldlevelstart=99
 
 if has('win32')
   let g:vimtex_view_general_viewer = 'SumatraPDF'
+  let g:vimtex_view_general_options_latexmk = '-reuse-instance'
   let g:vimtex_view_general_options
         \ = '-reuse-instance -forward-search @tex @line @pdf'
-  let g:vimtex_view_general_options_latexmk = '-reuse-instance'
+        \ . ' -inverse-search "' . exepath(v:progpath)
+        \ . ' --servername ' . v:servername
+        \ . ' --remote-send \"^<C-\^>^<C-n^>'
+        \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
+        \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
+        \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
 endif
 if has('unix')
   let g:vimtex_view_general_viewer = 'evince'
@@ -163,6 +171,8 @@ let g:polyglot_disabled = ['latex']
 
 
 """"""""""" FZF config
+
+command! -bang -nargs=? -complete=dir Files call fzf#vim#files(<q-args>, <bang>0)
 
 nmap <C-p> :Files<cr>
 nmap <C-l> :Buffers<cr>
