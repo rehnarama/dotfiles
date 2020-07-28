@@ -17,7 +17,8 @@ Plug 'junegunn/vim-easy-align'
 
 " For nice colours
 Plug 'iCyMind/NeoSolarized'
-Plug 'nightsense/vimspectr'
+Plug 'mhartington/oceanic-next'
+Plug 'sonph/onehalf', {'rtp': 'vim/'} 
 
 " For easier (de)surrounding of text objects with operators
 Plug 'tpope/vim-surround'
@@ -53,14 +54,17 @@ call plug#end()
 
 
 " Report that we have true color terminal
-set termguicolors
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-set background=light
 set guifont=Cascadia\ Code:h13
 
 
 " Set colorscheme 
-colorscheme NeoSolarized
+colorscheme onehalflight
+" This will disable background so e.g. windows terminal acrylic effects are 
+" visible. Note that we set guibg=none since we use termguicolors above
+highlight Normal ctermbg=none
+highlight NonText ctermbg=none
+highlight LineNr ctermbg=none 
 
 " So that we exit terminal-mode with escape
 tnoremap <Esc> <C-\><C-n>
