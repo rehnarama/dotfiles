@@ -1,13 +1,6 @@
 
-function GetPlugDir()
-  if (has('win32'))
-    return '$LOCALAPPDATA/nvim/plugged'
-  else
-    return  '~/.config/nvim/plugged'
-  endif
-endfunction
 
-let plugdir = GetPlugDir()
+let plugdir = '~/.config/nvim/plugged'
 
 call plug#begin(plugdir)
 " Make sure you use single quotes
@@ -15,6 +8,11 @@ call plug#begin(plugdir)
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 "Plug 'neovim/nvim-lspconfig'
 "Plug 'nvim-lua/completion-nvim'
+"Plug 'hrsh7th/nvim-compe'
+
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 
 Plug 'sonph/onehalf', { 'rtp': 'vim' }
 
@@ -38,15 +36,12 @@ Plug 'editorconfig/editorconfig-vim'
 
 " Plug 'sheerun/vim-polyglot'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
-
+Plug 'petrbroz/vim-glsl'
 
 Plug 'honza/vim-snippets'
 
 Plug 'tpope/vim-fugitive'
 Plug 'tommcdo/vim-fubitive'
-
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
 
 Plug 'wellle/targets.vim'
 
@@ -66,7 +61,8 @@ tnoremap <Esc> <C-\><C-n>
 set backupcopy=yes
 
 if has('nvim-0.5')
-  lua <<EOF
+
+lua <<EOF
   require'nvim-treesitter.configs'.setup {
     ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
     highlight = {
@@ -87,10 +83,11 @@ if has('nvim-0.5')
     },
     textobjects = { enable = true }
   }
-  EOF
-  
+EOF
+
   set foldmethod=expr
   set foldexpr=nvim_treesitter#foldexpr()
+
 endif
 
 
@@ -169,36 +166,59 @@ let g:markdown_folding=1
 set foldlevelstart=99
 
 
-""""""""""" FZF config
-
-command! -bang -nargs=? -complete=dir Files call fzf#vim#files(<q-args>, <bang>0)
-
-nmap <C-p> :Files<cr>
-nmap <C-l> :Buffers<cr>
-nmap <leader>rg "zyiw:exe ":Rg ".@z.""<CR> 
+""""""""""" telescope config
+nnoremap <C-p> <cmd>Telescope find_files<cr>
+nnoremap <C-f> <cmd>Telescope live_grep<cr>
+nnoremap <C-l> <cmd>Telescope buffers<cr>
 
 """""""""""" LSP Config
 
 "" Set completeopt to have a better completion experience
 "set completeopt=menuone,noinsert,noselect
 "
-"" Avoid showing message extra message when using completion
-"set shortmess+=c
-"
 "lua << EOF
 "local nvim_lsp = require('lspconfig')
 "
-"-- Use a loop to conveniently both setup defined servers 
-"-- and map buffer local keybindings when the language server attaches
-"local servers = { "tsserver" }
-"for _, lsp in ipairs(servers) do
-"  nvim_lsp[lsp].setup { on_attach=require'completion'.on_attach }
+"-- Use an on_attach function to only map the following keys 
+"-- after the language server attaches to the current buffer
+"local on_attach = function(client, bufnr)
+"  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+"  local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
+"
+"  --Enable completion triggered by <c-x><c-o>
+"  buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+"
+"  -- Mappings.
+"  local opts = { noremap=false, silent=true }
+"
+"  -- See `:help vim.lsp.*` for documentation on any of the below functions
+"  buf_set_keymap('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+"  buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
+"  buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
+"  buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+"  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+"  buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+"  buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+"  buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+"  buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+"  buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+"  buf_set_keymap('n', '<leader>ac', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+"  buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+"  buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+"  buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
+"  buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
+"  buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+"  buf_set_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+"
 "end
 "
-"
+"-- Use a loop to conveniently call 'setup' on multiple servers and
+"-- map buffer local keybindings when the language server attaches
+"local servers = { "tsserver" }
+"for _, lsp in ipairs(servers) do
+"  nvim_lsp[lsp].setup { on_attach = on_attach }
+"end
 "EOF
-"
-"autocmd BufEnter * lua require'completion'.on_attach()
 
 """""""""" Coc configuration
 
@@ -304,4 +324,5 @@ nmap ga <Plug>(LiveEasyAlign)
 """ VIM FUGITIVE
 
 let g:fubitive_domain_pattern = 'stash\.int\.klarna\.net'
+
 
