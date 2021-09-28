@@ -43,3 +43,31 @@ if($env:WT_SESSION){
 }
 
 Set-Alias ".." "cd.."
+
+$GitCommands = (git --list-cmds=main,others,alias,nohelpers)
+Register-ArgumentCompleter -Native -CommandName git -ScriptBlock {
+  param($wordToComplete, $commandAst, $cursorPosition)
+  
+  $command = $commandAst.ToString()
+
+  $result = Invoke-Command -ScriptBlock {
+    if ($command -match "^git add") {
+      $addableFiles = git ls-files --others --exclude-standard -m 
+      $addableFiles 
+    } elseif ($command -match "^git rm") {
+      $removableFiles = git ls-files
+      $removableFiles 
+    } elseif ($command -match "^git restore") {
+      $restorableFiles = git ls-files -m
+      $restorableFiles 
+    } elseif ($command -match "^git (switch|checkout)") {
+      $switchableBranches = git branch -a --format "%(refname:lstrip=2)"
+      $switchableBranches 
+    } elseif ($command -match "^git") {
+      $GitCommands
+    }
+  }
+
+  $result = @($result)
+  $result -like "*$wordToComplete*"
+}
