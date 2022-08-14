@@ -8,6 +8,8 @@ Set-PSReadLineOption -HistorySearchCursorMovesToEnd
 # Adjust colors to fit light theme
 Set-PSReadLineOption -Colors @{ InlinePrediction = '#AAAAAA'}
 Set-PSReadLineOption -Colors @{ Selection = '#AAAAAA'}
+Set-PSReadLineOption -Colors @{ ContinuationPrompt = '#AAAAAA'}
+Set-PSReadLineOption -Colors @{ Default = '#000000'}
 Set-PSReadLineOption -Colors @{ Member = "$([char]0x1b)[94m" }
 Set-PSReadLineOption -Colors @{ Number = "$([char]0x1b)[94m" }
 
@@ -71,3 +73,17 @@ Register-ArgumentCompleter -Native -CommandName git -ScriptBlock {
   $result = @($result)
   $result -like "*$wordToComplete*"
 }
+
+Set-PSReadLineKeyHandler -Chord Alt+c -ScriptBlock {
+  fd -t d | ForEach-Object { $_ } | fzf "--height=40% " | ForEach-Object { Set-Location $_ } 
+
+  $previousOutputEncoding = [Console]::OutputEncoding
+  [Console]::OutputEncoding = [Text.Encoding]::UTF8
+  
+  try {
+    [Microsoft.PowerShell.PSConsoleReadLine]::InvokePrompt()
+  } finally {
+    [Console]::OutputEncoding = $previousOutputEncoding
+  }
+}
+
