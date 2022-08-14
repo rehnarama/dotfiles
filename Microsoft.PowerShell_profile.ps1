@@ -1,7 +1,8 @@
 Set-PSReadLineOption -EditMode Vi
-Set-PSReadLineOption -PredictionSource History
+Set-PSReadLineOption -PredictionSource HistoryAndPlugin
 Set-PSReadLineKeyHandler -Chord UpArrow -Function HistorySearchBackward
 Set-PSReadLineKeyHandler -Chord DownArrow -Function HistorySearchForward
+Set-PSReadLineKeyHandler -Chort Ctrl+RightArrow -Function AcceptNextSuggestionWord
 Set-PSReadLineKeyHandler -Chord Tab -Function MenuComplete
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd
 
