@@ -135,6 +135,10 @@ $env:BAT_THEME="OneHalfLight"
 
 function Invoke-Starship-PreCommand {
   $host.ui.Write("`e]0; PS> $env:USERNAME@USERNAME@$env:COMPUTERNAME`: $pwd `a")
+
+  if (Test-Path .nvmrc) {
+    Set-NodeVersion
+  }
 }
 
 Invoke-Expression (&starship init powershell)
@@ -142,3 +146,10 @@ Invoke-Expression (&starship init powershell)
 Register-GitCompletion
 
 
+
+if ($IsLinux) {
+  Set-Alias ls Get-ChildItem
+  Set-Alias rm Remove-Item
+  Set-Alias cp Copy-Item
+  Set-Alias mv Move-Item
+}
