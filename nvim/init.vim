@@ -11,13 +11,19 @@ Plug 'hrsh7th/cmp-path', { 'branch': 'main' }
 Plug 'hrsh7th/cmp-cmdline', { 'branch': 'main' }
 Plug 'hrsh7th/nvim-cmp', { 'branch': 'main' }
 
-Plug 'jose-elias-alvarez/null-ls.nvim'
-Plug 'MunifTanjim/prettier.nvim'
+Plug 'jose-elias-alvarez/null-ls.nvim', { 'branch': 'main' }
+Plug 'MunifTanjim/prettier.nvim', { 'branch': 'main' }
+
+Plug 'RRethy/vim-illuminate'
 
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
+Plug 'natecraddock/telescope-zf-native.nvim'
 
+Plug 'stevearc/dressing.nvim'
+
+Plug 'olimorris/onedarkpro.nvim'
 Plug 'sonph/onehalf', { 'rtp': 'vim' }
 
 " Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
@@ -35,12 +41,8 @@ Plug 'tpope/vim-repeat'
 " An improved netrw fork 
 Plug 'tpope/vim-vinegar'
 
-" Editorconfig plugin
-Plug 'editorconfig/editorconfig-vim'
-
 " Plug 'sheerun/vim-polyglot'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
-Plug 'petrbroz/vim-glsl'
 
 Plug 'honza/vim-snippets'
 
@@ -56,7 +58,7 @@ call plug#end()
 set termguicolors
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 " set guifont=Cascadia\ Code:h13
-colorscheme onehalflight
+colorscheme onelight
 
 " So that we exit terminal-mode with escape
 tnoremap <Esc> <C-\><C-n>
@@ -148,8 +150,8 @@ set textwidth=80
 set wildignore=.git,node_modules,.meteor,*.min.*,OneDrive
 
 " Wild menu uses popup menu, which is a bit blended
-set wildoptions=pum
-set pumblend=15
+" set wildoptions=pum
+" set pumblend=15
 
 " Split on the other side
 set splitbelow
@@ -165,9 +167,37 @@ set foldlevelstart=99
 
 
 """"""""""" telescope config
-nnoremap <C-p> <cmd>Telescope find_files<cr>
-nnoremap <C-f> <cmd>Telescope live_grep<cr>
-nnoremap <C-l> <cmd>Telescope buffers<cr>
+
+lua <<EOF
+
+local builtin = require('telescope.builtin')
+local telescope = require('telescope')
+vim.keymap.set('n', '<C-p>', builtin.find_files, {})
+vim.keymap.set('n', '<C-g>', builtin.live_grep, {})
+vim.keymap.set('n', '<C-f>', builtin.current_buffer_fuzzy_find, {})
+vim.keymap.set('n', '<C-l>', builtin.buffers, {})
+vim.keymap.set('n', '<C-h>', builtin.help_tags, {})
+
+vim.keymap.set('n', 'gd', builtin.lsp_definitions, {})
+vim.keymap.set('n', '<leader>D', builtin.lsp_type_definitions, {})
+vim.keymap.set('n', 'gi', builtin.lsp_implementations, {})
+vim.keymap.set('n', 'gr', builtin.lsp_references, {})
+vim.keymap.set('n', '<leader>e', builtin.diagnostics, {})
+
+vim.keymap.set('n', '<leader><space>', builtin.lsp_workspace_symbols, {})
+
+vim.keymap.set('n', '<leader><leader>', builtin.builtin, {})
+
+telescope.setup({
+	defaults = {
+		path_display = { "truncate" }
+	}
+})
+
+telescope.load_extension("zf-native")
+
+EOF
+
 
 """""""""""" LSP Config
 
@@ -245,20 +275,36 @@ local on_attach = function(client, bufnr)
   -- See `:help vim.lsp.*` for documentation on any of the below functions
   local bufopts = { noremap=true, silent=true, buffer=bufnr }
   vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+  -- vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+  -- vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
   vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
   vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
   vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
   vim.keymap.set('n', '<space>wl', function()
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
   end, bufopts)
-  vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
-  vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
+  -- vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, bufopts)
+  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
   vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
-  vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+  -- vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
   vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format { async = true } end, bufopts)
+
+	vim.api.nvim_create_autocmd("CursorHold", {
+	  buffer = bufnr,
+	  callback = function()
+	    local opts = {
+	      focusable = false,
+	      close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+	      border = 'rounded',
+	      source = 'always',
+	      prefix = ' ',
+	      scope = 'cursor',
+	    }
+	    vim.diagnostic.open_float(nil, opts)
+	  end
+	})
+
 end
   -- Set up lspconfig.
   local capabilities = require('cmp_nvim_lsp').default_capabilities()
@@ -280,14 +326,14 @@ local null_ls = require("null-ls")
 
 null_ls.setup({
     sources = {
-        null_ls.builtins.diagnostics.eslint,
+        -- null_ls.builtins.diagnostics.eslint,
         null_ls.builtins.formatting.prettier
     },
 })
 
 EOF
 
-
+set updatetime=1000
 
 
 """"""""""" Easy align configuration
