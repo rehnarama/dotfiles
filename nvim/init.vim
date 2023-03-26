@@ -16,10 +16,13 @@ Plug 'MunifTanjim/prettier.nvim', { 'branch': 'main' }
 
 Plug 'RRethy/vim-illuminate'
 
+Plug 'sqlite.lua'
+
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'natecraddock/telescope-zf-native.nvim'
+Plug 'nvim-telescope/telescope-frecency.nvim'
 
 Plug 'stevearc/dressing.nvim'
 
@@ -191,10 +194,20 @@ vim.keymap.set('n', '<leader><leader>', builtin.builtin, {})
 telescope.setup({
 	defaults = {
 		path_display = { "truncate" }
+	},
+	pickers = {
+		buffers = {
+			mappings = {
+				n = {
+					["X"] = "delete_buffer"
+				}
+			}
+		}
 	}
 })
 
 telescope.load_extension("zf-native")
+telescope.load_extension("frecency")
 
 EOF
 
