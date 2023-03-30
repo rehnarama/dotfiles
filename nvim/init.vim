@@ -1,6 +1,3 @@
-
-
-
 call plug#begin()
 " Make sure you use single quotes
 
@@ -16,7 +13,7 @@ Plug 'MunifTanjim/prettier.nvim', { 'branch': 'main' }
 
 Plug 'RRethy/vim-illuminate'
 
-Plug 'sqlite.lua'
+Plug 'kkharji/sqlite.lua'
 
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
@@ -53,6 +50,9 @@ Plug 'tpope/vim-fugitive'
 Plug 'tommcdo/vim-fubitive'
 
 Plug 'wellle/targets.vim'
+
+" Icons
+Plug 'nvim-tree/nvim-web-devicons'
 
 " Initialize plugin system
 call plug#end()
@@ -191,6 +191,9 @@ vim.keymap.set('n', '<leader><space>', builtin.lsp_workspace_symbols, {})
 
 vim.keymap.set('n', '<leader><leader>', builtin.builtin, {})
 
+telescope.load_extension("zf-native")
+telescope.load_extension("frecency")
+
 telescope.setup({
 	defaults = {
 		path_display = { "truncate" }
@@ -205,9 +208,6 @@ telescope.setup({
 		}
 	}
 })
-
-telescope.load_extension("zf-native")
-telescope.load_extension("frecency")
 
 EOF
 
@@ -331,6 +331,10 @@ end
     on_attach = on_attach
   }
   require('lspconfig')['clangd'].setup {
+    capabilities = capabilities,
+    on_attach = on_attach
+  }
+  require('lspconfig')['pylsp'].setup {
     capabilities = capabilities,
     on_attach = on_attach
   }

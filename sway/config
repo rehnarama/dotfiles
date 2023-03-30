@@ -14,7 +14,7 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-set $term alacritty
+set $term kitty
 # Your preferred application launcher
 # Note: it's recommended that you pass the final command to sway
 set $menu GDK_BACKEND=wayland wofi --show=drun --lines=5 --prompt=""
@@ -24,9 +24,8 @@ for_window [app_id=pavucontrol] floating enable
 
 for_window [app_id=firefox] [title=Picture-in-Picture] floating enable
 
-# Execute mako, a notification daemon for wayland
+# Execute swaync, a notification daemon for wayland
 exec swaync
-
 
 # Pixel border around windows, no title bar
 default_border pixel
@@ -39,7 +38,8 @@ gaps inner 8
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg $HOME/Pictures/bg.jpg fill
+set $bg $HOME/Pictures/bg.jpg
+output * bg $bg fill
 #
 # Example configuration:
 #
@@ -50,12 +50,9 @@ output * bg $HOME/Pictures/bg.jpg fill
 ### Idle configuration
 # requires swaylock-effects (https://github.com/mortie/swaylock-effects)
 set $lock swaylock \
-	--screenshots \
-	--clock \
-	--indicator \
+	--image $bg \
 	--indicator-radius 100 \
 	--indicator-thickness 7 \
-	--effect-blur 10x10 \
 	--ring-color bb00cc \
 	--key-hl-color 880033 \
 	--line-color 00000000 \
@@ -94,10 +91,10 @@ input type:touchpad {
     scroll_factor 0.3
 }
 
-output eDP-1 position 0,0
-output DP-2 scale 2
-output DP-8 scale 1 enable
-output DP-9 scale 1
+# output eDP-1 position 0,0
+# output DP-2 scale 2
+# output DP-8 scale 1 enable
+# output DP-9 scale 1
 
 ### Key bindings
 #
@@ -195,7 +192,7 @@ output DP-9 scale 1
 
     # Switch the current container between different layout styles
     bindsym $mod+s layout stacking
-    bindsym $mod+w layout tabbed
+    bindsym $mod+t layout tabbed
     bindsym $mod+e layout toggle split
 
     # Make the current focus fullscreen
