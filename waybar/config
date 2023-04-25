@@ -89,7 +89,7 @@
         ""
       ]
     },
-    "on-click": "kitty -e nmtui",
+    "on-click": "gnome-control-center wifi",
     "tooltip": false
   },
   "pulseaudio": {
@@ -109,9 +109,10 @@
         ""
       ]
     },
-    "scroll-step": 1,
-    "on-click": "pavucontrol",
-    "tooltip": false
+    "scroll-step": 2,
+    "on-click": "gnome-control-center sound",
+    "tooltip": true,
+    "tooltip-format": "Sound",
   },
   "custom/spotify": {
     "interval": 1,

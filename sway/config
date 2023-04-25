@@ -24,6 +24,10 @@ for_window [app_id=pavucontrol] floating enable
 
 for_window [app_id=firefox] [title=Picture-in-Picture] floating enable
 
+for_window [app_id=zoom, title="Zoom - Licensed Account"] floating enable
+for_window [app_id="zoom" title="^(Zoom|About)$"] border pixel, floating enable
+for_window [app_id="zoom" title="Settings"] floating enable, floating_minimum_size 960 x 700
+
 # Execute swaync, a notification daemon for wayland
 exec swaync
 
@@ -59,11 +63,11 @@ set $lock swaylock \
 	--inside-color 00000088 \
 	--separator-color 00000000
 
-exec swayidle -w \
-         timeout 300 '$lock -f -c 000000' \
-         timeout 600 'swaymsg "output * dpms off"' \
-              resume 'swaymsg "output * dpms on"' \
-         before-sleep '$lock -f -c 000000'
+# exec swayidle -w \
+#          timeout 300 '$lock -f -c 000000' \
+#          timeout 600 'swaymsg "output * dpms off"' \
+#               resume 'swaymsg "output * dpms on"' \
+#          before-sleep '$lock -f -c 000000'
 #
 # This will lock your screen after 300 seconds of inactivity, then turn off
 # your displays after another 300 seconds, and turn your screens back on when
@@ -272,3 +276,6 @@ client.unfocused         #5c6370 #3b3228 #ffffff #5c6370   #5c6370
 #client.background 	#fffffff
 
 include /etc/sway/config.d/*
+include $HOME/.config/sway/config.d/*
+
+exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway

@@ -9,7 +9,6 @@ Plug 'hrsh7th/cmp-cmdline', { 'branch': 'main' }
 Plug 'hrsh7th/nvim-cmp', { 'branch': 'main' }
 
 Plug 'jose-elias-alvarez/null-ls.nvim', { 'branch': 'main' }
-Plug 'MunifTanjim/prettier.nvim', { 'branch': 'main' }
 
 Plug 'RRethy/vim-illuminate'
 
@@ -23,8 +22,7 @@ Plug 'nvim-telescope/telescope-frecency.nvim'
 
 Plug 'stevearc/dressing.nvim'
 
-Plug 'olimorris/onedarkpro.nvim'
-Plug 'sonph/onehalf', { 'rtp': 'vim' }
+Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 
 " Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
 Plug 'junegunn/vim-easy-align'
@@ -41,13 +39,13 @@ Plug 'tpope/vim-repeat'
 " An improved netrw fork 
 Plug 'tpope/vim-vinegar'
 
-" Plug 'sheerun/vim-polyglot'
+Plug 'lukas-reineke/indent-blankline.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
 
 Plug 'honza/vim-snippets'
 
 Plug 'tpope/vim-fugitive'
-Plug 'tommcdo/vim-fubitive'
+Plug 'tpope/vim-rhubarb'
 
 Plug 'wellle/targets.vim'
 
@@ -61,7 +59,7 @@ call plug#end()
 set termguicolors
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 " set guifont=Cascadia\ Code:h13
-colorscheme onelight
+colorscheme catppuccin-latte
 
 " So that we exit terminal-mode with escape
 tnoremap <Esc> <C-\><C-n>
@@ -73,11 +71,18 @@ set backupcopy=yes
 set title
 
 lua <<EOF
+	vim.opt.list = true
+	vim.opt.listchars:append "space:⋅"
+
+  require'indent_blankline'.setup {
+    show_current_context = true,
+    space_char_blankline = " ",
+  }
+
   require'nvim-treesitter.configs'.setup {
     ensure_installed = "all", -- one of "all"  (parsers with maintainers), or a list of languages
     highlight = {
       enable = true,              -- false will disable the whole extension
-      use_languagetree = true, -- Use this to enable language injection
     },
     indent = {
       enable = true
@@ -176,6 +181,7 @@ lua <<EOF
 local builtin = require('telescope.builtin')
 local telescope = require('telescope')
 vim.keymap.set('n', '<C-p>', builtin.find_files, {})
+vim.keymap.set('n', '<C-s-p>', builtin.find_files, {})
 vim.keymap.set('n', '<C-g>', builtin.live_grep, {})
 vim.keymap.set('n', '<C-f>', builtin.current_buffer_fuzzy_find, {})
 vim.keymap.set('n', '<C-l>', builtin.buffers, {})
@@ -281,6 +287,18 @@ lua <<EOF
   })
 
 local on_attach = function(client, bufnr)
+  -- Use treesitter, disable highlighting from LSP
+	client.server_capabilities.semanticTokensProvider = nil
+
+  local lsp_formatting = function(bufnr)
+    vim.lsp.buf.format({
+      filter = function(client)
+        return client.name ~= "tsserver";
+      end,
+      async = true
+    })
+  end
+
   -- Enable completion triggered by <c-x><c-o>
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
@@ -288,20 +306,17 @@ local on_attach = function(client, bufnr)
   -- See `:help vim.lsp.*` for documentation on any of the below functions
   local bufopts = { noremap=true, silent=true, buffer=bufnr }
   vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-  -- vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-  -- vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
   vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
   vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
   vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
   vim.keymap.set('n', '<space>wl', function()
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
   end, bufopts)
-  -- vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, bufopts)
   vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
   vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
-  -- vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-  vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format { async = true } end, bufopts)
+  vim.keymap.set('n', '<leader>f', lsp_formatting, bufopts)
+  vim.keymap.set('v', '<leader>f', lsp_formatting, bufopts)
 
 	vim.api.nvim_create_autocmd("CursorHold", {
 	  buffer = bufnr,
@@ -317,6 +332,7 @@ local on_attach = function(client, bufnr)
 	    vim.diagnostic.open_float(nil, opts)
 	  end
 	})
+
 
 end
   -- Set up lspconfig.
@@ -337,6 +353,11 @@ end
   require('lspconfig')['pylsp'].setup {
     capabilities = capabilities,
     on_attach = on_attach
+  }
+  require('lspconfig')['java_language_server'].setup {
+    capabilities = capabilities,
+    on_attach = on_attach,
+    cmd = { '/home/astrid/projects/java-language-server/dist/lang_server_linux.sh' }
   }
 
 local null_ls = require("null-ls")
@@ -364,6 +385,8 @@ nmap ga <Plug>(LiveEasyAlign)
 
 """ VIM FUGITIVE
 
-let g:fubitive_domain_pattern = 'stash\.int\.klarna\.net'
-
+if has("linux")
+	let g:netrw_browsex_viewer="xdg-open"
+endif
+let g:github_enterprise_urls = ['https://github.int.midasplayer.com/', 'github.int.midasplayer.com']
 

@@ -2,7 +2,7 @@
  * vim: ft=less
  */
 
-@define-color cc-bg rgba(0, 0, 0, 0.7);
+@define-color cc-bg rgba(75, 75, 75, 1);
 
 @define-color noti-border-color rgba(255, 255, 255, 0.15);
 @define-color noti-bg rgb(48, 48, 48);
@@ -155,6 +155,7 @@
 
 .control-center {
   background: @cc-bg;
+  border-radius: 0 0 10px 10px;
 }
 
 .control-center-list {
@@ -171,7 +172,7 @@
 
 /* Window behind control center and on all other monitors */
 .blank-window {
-  background: alpha(black, 0.25);
+  /* background: alpha(black, 0.25); */
 }
 
 /*** Widgets ***/
