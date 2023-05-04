@@ -1,12 +1,18 @@
 call plug#begin()
 " Make sure you use single quotes
 
+
 Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/cmp-nvim-lsp', { 'branch': 'main' }
 Plug 'hrsh7th/cmp-buffer', { 'branch': 'main' }
 Plug 'hrsh7th/cmp-path', { 'branch': 'main' }
 Plug 'hrsh7th/cmp-cmdline', { 'branch': 'main' }
 Plug 'hrsh7th/nvim-cmp', { 'branch': 'main' }
+
+Plug 'mfussenegger/nvim-dap'
+Plug 'rcarriga/nvim-dap-ui'
+
+Plug 'nanozuki/tabby.nvim'
 
 Plug 'jose-elias-alvarez/null-ls.nvim', { 'branch': 'main' }
 
@@ -71,6 +77,68 @@ set backupcopy=yes
 set title
 
 lua <<EOF
+  -- Tabby/tabline configuration
+  vim.o.showtabline = 2
+
+  local theme = {
+    fill = 'TabLineFill',
+    -- Also you can do this: fill = { fg='#f2e9de', bg='#907aa9', style='italic' }
+    head = 'TabLine',
+    current_tab = 'TabLineSel',
+    tab = 'TabLine',
+    win = 'TabLine',
+    tail = 'TabLine',
+  }
+
+  require('tabby.tabline').set(function(line)
+    return {
+      {
+        { '  ', hl = theme.head },
+        line.sep('', theme.head, theme.fill),
+      },
+      line.tabs().foreach(function(tab)
+        local hl = tab.is_current() and theme.current_tab or theme.tab
+        return {
+          line.sep('', hl, theme.fill),
+          tab.is_current() and '' or '',
+          tab.number(),
+          tab.name(),
+          tab.close_btn(''),
+          line.sep('', hl, theme.fill),
+          hl = hl,
+          margin = ' ',
+        }
+      end),
+      line.spacer(),
+      line.wins_in_tab(line.api.get_current_tab()).foreach(function(win)
+        return {
+          line.sep('', theme.win, theme.fill),
+          win.is_current() and '' or '',
+          win.file_icon(),
+          win.buf_name(),
+          line.sep('', theme.win, theme.fill),
+          hl = theme.win,
+          margin = ' ',
+        }
+      end),
+      {
+        line.sep('', theme.tail, theme.fill),
+        { '  ', hl = theme.tail },
+      },
+      hl = theme.fill,
+    }
+  end, {
+  tab_name = {
+    name_fallback = function(tabId) 
+      return string.match(vim.fn.getcwd(-1, tabId), "([^/]+)$")
+    end
+  },
+  buf_name = {
+    mode = 'unique'
+  }
+})
+
+
 	vim.opt.list = true
 	vim.opt.listchars:append "space:⋅"
 
@@ -152,7 +220,6 @@ set colorcolumn=80
 
 set wrap
 set linebreak
-set textwidth=80
 
 " Ignore setting
 set wildignore=.git,node_modules,.meteor,*.min.*,OneDrive
@@ -173,6 +240,73 @@ nmap <leader>mk :make -s<cr>
 " Start with no folds closed
 set foldlevelstart=99
 
+" Use xdg-open on linux
+if (has("linux"))
+  let g:netrw_browsex_viewer="xdg-open"
+endif
+
+""""""""""" nvim dap config
+
+lua <<EOF
+
+local dap = require('dap')
+local dapui = require("dapui")
+
+dapui.setup()
+
+dap.adapters.lldb = {
+  type = 'executable',
+  command = '/usr/bin/lldb-vscode', -- adjust as needed, must be absolute path
+  name = 'lldb'
+}
+
+dap.configurations.cpp = {
+  {
+    name = 'Launch',
+    type = 'lldb',
+    request = 'launch',
+    program = function()
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+    end,
+    cwd = '${workspaceFolder}',
+    stopOnEntry = false,
+    args = {},
+
+    -- 💀
+    -- if you change `runInTerminal` to true, you might need to change the yama/ptrace_scope setting:
+    --
+    --    echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+    --
+    -- Otherwise you might get the following error:
+    --
+    --    Error on launch: Failed to attach to the target process
+    --
+    -- But you should be aware of the implications:
+    -- https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
+    -- runInTerminal = false,
+  },
+}
+
+vim.fn.sign_define('DapBreakpoint', {text='🔴', texthl='', linehl='', numhl=''})
+
+
+dap.listeners.after.event_initialized["dapui_config"] = function()
+  dapui.open()
+end
+dap.listeners.before.event_terminated["dapui_config"] = function()
+  dapui.close()
+end
+dap.listeners.before.event_exited["dapui_config"] = function()
+  dapui.close()
+end
+
+vim.keymap.set('n', '<leader>b', dap.toggle_breakpoint)
+vim.keymap.set('n', '<leader>c', dap.continue)
+vim.keymap.set('n', '<leader>so', dap.step_over)
+vim.keymap.set('n', '<leader>si', dap.step_into)
+vim.keymap.set('n', '<leader>d', dap.repl.open)
+vim.keymap.set('n', '<M-k>', dapui.eval)
+EOF
 
 """"""""""" telescope config
 
@@ -385,8 +519,7 @@ nmap ga <Plug>(LiveEasyAlign)
 
 """ VIM FUGITIVE
 
-if has("linux")
-	let g:netrw_browsex_viewer="xdg-open"
-endif
 let g:github_enterprise_urls = ['https://github.int.midasplayer.com/', 'github.int.midasplayer.com']
+
+
 

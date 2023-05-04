@@ -134,7 +134,7 @@ function ConvertTo-Base64 {
 $env:BAT_THEME="OneHalfLight"
 
 function Invoke-Starship-PreCommand {
-  $host.ui.Write("`e]0; PS> $env:USERNAME@USERNAME@$env:COMPUTERNAME`: $pwd `a")
+  $host.ui.Write("`e]0; $($pwd.Path -replace $HOME,'~') `a")
 
   if (Test-Path .nvmrc) {
     Set-NodeVersion
@@ -145,6 +145,22 @@ Invoke-Expression (&starship init powershell)
 
 Register-GitCompletion
 
+function Invoke-Forest {
+  param (
+    [ValidateSet('Generate', 'Update', 'Compile')]
+    $Action = 'Update',
+    [ValidateSet('Dev', 'QA', 'Live')]
+    $Environment = 'Dev'
+  )
+
+  $Action = $Action.ToLower();
+  $Environment = $Environment.ToLower();
+
+  python externals/meta/fictionfactory/tools/forest/forest.py --action $Action --tree platform=linux environment=$Environment --ccache --db --override run_tests=false
+}
+
+$env:CFLAGS="-Wno-error=infinite-recursion -Wno-error=uninitialized -Wno-unqualified-std-cast-call -Wno-error=unused-but-set-variable -fstandalone-debug"
+$env:CXXFLAGS=$env:CFLAGS
 
 
 if ($IsLinux) {
