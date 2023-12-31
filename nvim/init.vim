@@ -1,18 +1,18 @@
 call plug#begin()
 " Make sure you use single quotes
 
-
 Plug 'neovim/nvim-lspconfig'
+Plug 'onsails/lspkind.nvim'
 Plug 'hrsh7th/cmp-nvim-lsp', { 'branch': 'main' }
 Plug 'hrsh7th/cmp-buffer', { 'branch': 'main' }
 Plug 'hrsh7th/cmp-path', { 'branch': 'main' }
 Plug 'hrsh7th/cmp-cmdline', { 'branch': 'main' }
+Plug 'hrsh7th/cmp-calc', { 'branch': 'main' }
 Plug 'hrsh7th/nvim-cmp', { 'branch': 'main' }
+Plug 'folke/trouble.nvim'
 
 Plug 'mfussenegger/nvim-dap'
 Plug 'rcarriga/nvim-dap-ui'
-
-Plug 'nanozuki/tabby.nvim'
 
 Plug 'jose-elias-alvarez/null-ls.nvim', { 'branch': 'main' }
 
@@ -25,6 +25,7 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'natecraddock/telescope-zf-native.nvim'
 Plug 'nvim-telescope/telescope-frecency.nvim'
+Plug 'nvim-telescope/telescope-media-files.nvim'
 
 Plug 'stevearc/dressing.nvim'
 
@@ -43,17 +44,18 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-repeat'
 
 " An improved netrw fork 
-Plug 'tpope/vim-vinegar'
+" Plug 'tpope/vim-vinegar'
+Plug 'stevearc/oil.nvim'
+
+Plug 'tpope/vim-abolish'
+
+Plug 'L3MON4D3/LuaSnip'
 
 Plug 'lukas-reineke/indent-blankline.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
 
-Plug 'honza/vim-snippets'
-
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
-
-Plug 'wellle/targets.vim'
 
 " Icons
 Plug 'nvim-tree/nvim-web-devicons'
@@ -77,74 +79,19 @@ set backupcopy=yes
 set title
 
 lua <<EOF
-  -- Tabby/tabline configuration
-  vim.o.showtabline = 2
 
-  local theme = {
-    fill = 'TabLineFill',
-    -- Also you can do this: fill = { fg='#f2e9de', bg='#907aa9', style='italic' }
-    head = 'TabLine',
-    current_tab = 'TabLineSel',
-    tab = 'TabLine',
-    win = 'TabLine',
-    tail = 'TabLine',
-  }
+require("oil").setup()
+vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 
-  require('tabby.tabline').set(function(line)
-    return {
-      {
-        { '  ', hl = theme.head },
-        line.sep('', theme.head, theme.fill),
-      },
-      line.tabs().foreach(function(tab)
-        local hl = tab.is_current() and theme.current_tab or theme.tab
-        return {
-          line.sep('', hl, theme.fill),
-          tab.is_current() and '' or '',
-          tab.number(),
-          tab.name(),
-          tab.close_btn(''),
-          line.sep('', hl, theme.fill),
-          hl = hl,
-          margin = ' ',
-        }
-      end),
-      line.spacer(),
-      line.wins_in_tab(line.api.get_current_tab()).foreach(function(win)
-        return {
-          line.sep('', theme.win, theme.fill),
-          win.is_current() and '' or '',
-          win.file_icon(),
-          win.buf_name(),
-          line.sep('', theme.win, theme.fill),
-          hl = theme.win,
-          margin = ' ',
-        }
-      end),
-      {
-        line.sep('', theme.tail, theme.fill),
-        { '  ', hl = theme.tail },
-      },
-      hl = theme.fill,
-    }
-  end, {
-  tab_name = {
-    name_fallback = function(tabId) 
-      return string.match(vim.fn.getcwd(-1, tabId), "([^/]+)$")
-    end
-  },
-  buf_name = {
-    mode = 'unique'
-  }
-})
+vim.filetype.add({
+extension = {
+    pipeline = 'pipeline',
+}})
 
-
-	vim.opt.list = true
-	vim.opt.listchars:append "space:⋅"
-
-  require'indent_blankline'.setup {
-    show_current_context = true,
-    space_char_blankline = " ",
+  require'ibl'.setup {
+      indent = {
+          char = "┃" -- center aligned, rather than left align
+      }
   }
 
   require'nvim-treesitter.configs'.setup {
@@ -154,7 +101,7 @@ lua <<EOF
     },
     indent = {
       enable = true
-    },  
+    },
     incremental_selection = {
       enable = true,
       keymaps = {
@@ -170,7 +117,7 @@ EOF
 
 set foldmethod=expr
 set foldexpr=nvim_treesitter#foldexpr()
-
+set nofoldenable " disable fold at startup
 
 
 " Set leader and localleader to comma
@@ -204,8 +151,8 @@ set inccommand=nosplit
 set smartindent
 
 " Set tab to spaces
-set tabstop=2
-set shiftwidth=2
+set tabstop=4
+set shiftwidth=4
 set expandtab
 
 " Set line numbers
@@ -237,13 +184,13 @@ set mouse=a
 " Key bind make -s
 nmap <leader>mk :make -s<cr>
 
-" Start with no folds closed
-set foldlevelstart=99
-
 " Use xdg-open on linux
 if (has("linux"))
   let g:netrw_browsex_viewer="xdg-open"
 endif
+
+set list
+set listchars=trail:-,nbsp:+,space: ,tab:║ ,
 
 """"""""""" nvim dap config
 
@@ -316,13 +263,12 @@ local builtin = require('telescope.builtin')
 local telescope = require('telescope')
 vim.keymap.set('n', '<C-p>', builtin.find_files, {})
 vim.keymap.set('n', '<C-s-p>', builtin.find_files, {})
-vim.keymap.set('n', '<C-g>', builtin.live_grep, {})
-vim.keymap.set('n', '<C-f>', builtin.current_buffer_fuzzy_find, {})
+vim.keymap.set('n', '<C-f>', builtin.live_grep, {})
 vim.keymap.set('n', '<C-l>', builtin.buffers, {})
 vim.keymap.set('n', '<C-h>', builtin.help_tags, {})
 
 vim.keymap.set('n', 'gd', builtin.lsp_definitions, {})
-vim.keymap.set('n', '<leader>D', builtin.lsp_type_definitions, {})
+vim.keymap.set('n', 'gD', builtin.lsp_type_definitions, {})
 vim.keymap.set('n', 'gi', builtin.lsp_implementations, {})
 vim.keymap.set('n', 'gr', builtin.lsp_references, {})
 vim.keymap.set('n', '<leader>e', builtin.diagnostics, {})
@@ -333,6 +279,7 @@ vim.keymap.set('n', '<leader><leader>', builtin.builtin, {})
 
 telescope.load_extension("zf-native")
 telescope.load_extension("frecency")
+telescope.load_extension("media_files");
 
 telescope.setup({
 	defaults = {
@@ -346,34 +293,49 @@ telescope.setup({
 				}
 			}
 		}
-	}
+	},
 })
+
+vim.keymap.set('n', '<C-space>', builtin.resume, {})
 
 EOF
 
 
 """""""""""" LSP Config
 
+
 " Set completeopt to have a better completion experience
-set completeopt=menuone,noinsert,noselect
+set completeopt=menuone,noselect
 
 lua <<EOF
-  -- Set up nvim-cmp.
-  local cmp = require'cmp'
+local trouble = require('trouble')
+trouble.setup({
+    auto_preview = false
+})
+vim.keymap.set("n", "<leader>xx", function() require("trouble").toggle() end)
+vim.keymap.set("n", "<leader>xw", function() require("trouble").toggle("workspace_diagnostics") end)
+vim.keymap.set("n", "<leader>xd", function() require("trouble").toggle("document_diagnostics") end)
+vim.keymap.set("n", "<leader>xq", function() require("trouble").toggle("quickfix") end)
+vim.keymap.set("n", "<leader>xl", function() require("trouble").toggle("loclist") end)
+vim.keymap.set("n", "gR", function() require("trouble").toggle("lsp_references") end)
 
+  -- Utility for super tab
+  local has_words_before = function()
+    unpack = unpack or table.unpack
+    local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+    return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+  end
+
+  -- Set up nvim-cmp.
+  local cmp = require("cmp")
+  local lspkind = require('lspkind')
+  local luasnip = require("luasnip")
   cmp.setup({
     snippet = {
       -- REQUIRED - you must specify a snippet engine
       expand = function(args)
-        -- vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
-        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+        require('luasnip').lsp_expand(args.body)
       end,
-    },
-    window = {
-      -- completion = cmp.config.window.bordered(),
-      -- documentation = cmp.config.window.bordered(),
     },
     mapping = cmp.mapping.preset.insert({
       ['<C-b>'] = cmp.mapping.scroll_docs(-4),
@@ -381,16 +343,58 @@ lua <<EOF
       ['<C-Space>'] = cmp.mapping.complete(),
       ['<C-e>'] = cmp.mapping.abort(),
       ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-    }),
+      ["<Tab>"] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+          cmp.select_next_item()
+        -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable() 
+        -- that way you will only jump inside the snippet region
+        elseif luasnip.expand_or_jumpable() then
+          luasnip.expand_or_jump()
+        elseif has_words_before() then
+          cmp.complete()
+        else
+          fallback()
+        end
+      end, { "i", "s" }),
+
+      ["<S-Tab>"] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+          cmp.select_prev_item()
+        elseif luasnip.jumpable(-1) then
+          luasnip.jump(-1)
+        else
+          fallback()
+        end
+      end, { "i", "s" })
+      }),
     sources = cmp.config.sources({
       { name = 'nvim_lsp' },
-      -- { name = 'vsnip' }, -- For vsnip users.
-      -- { name = 'luasnip' }, -- For luasnip users.
-      -- { name = 'ultisnips' }, -- For ultisnips users.
-      -- { name = 'snippy' }, -- For snippy users.
+      { name = 'path' },
+      { name = 'luasnip' }, -- For luasnip users.
+      { name = 'calc' }
     }, {
       { name = 'buffer' },
-    })
+    }),
+    window = {
+        --completion = {
+        --  winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,Search:None",
+        --  col_offset = -3,
+        --  side_padding = 0,
+        --},
+      -- documentation = cmp.config.window.bordered(),
+    },
+    formatting = {
+        fields = { "kind", "abbr", "menu" },
+        format = function(entry, vim_item)
+          local kind = lspkind.cmp_format({ mode = 'symbol_text', maxwidth = 50, ellipsis_char = '…', })(entry, vim_item)
+
+          local strings = vim.split(kind.kind, "%s", { trimempty = true })
+          kind.kind = " " .. (strings[1] or "") .. " "
+          kind.menu = "    (" .. (strings[2] or "") .. ")"
+
+          return kind
+        end,
+    }
   })
 
   -- Set configuration for specific filetype.
@@ -424,12 +428,13 @@ local on_attach = function(client, bufnr)
   -- Use treesitter, disable highlighting from LSP
 	client.server_capabilities.semanticTokensProvider = nil
 
-  local lsp_formatting = function(bufnr)
+  local lsp_formatting = function()
     vim.lsp.buf.format({
       filter = function(client)
         return client.name ~= "tsserver";
       end,
-      async = true
+      async = true,
+      bufnr = bufnr
     })
   end
 
@@ -440,8 +445,9 @@ local on_attach = function(client, bufnr)
   -- See `:help vim.lsp.*` for documentation on any of the below functions
   local bufopts = { noremap=true, silent=true, buffer=bufnr }
   vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+  vim.keymap.set('n', 'gT', vim.lsp.buf.type_definition, bufopts)
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+  --vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
   vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
   vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
   vim.keymap.set('n', '<space>wl', function()
@@ -449,23 +455,27 @@ local on_attach = function(client, bufnr)
   end, bufopts)
   vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
   vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
+  vim.keymap.set('v', '<leader>ca', vim.lsp.buf.code_action, bufopts)
   vim.keymap.set('n', '<leader>f', lsp_formatting, bufopts)
   vim.keymap.set('v', '<leader>f', lsp_formatting, bufopts)
+  local float_opts = {
+    focusable = true,
+    close_events = { 
+        --"BufLeave", 
+        "CursorMoved", 
+        "InsertEnter", 
+        "FocusLost" 
+    },
+    border = 'rounded',
+    source = 'always',
+    prefix = ' ',
+    scope = 'cursor',
+  }
 
-	vim.api.nvim_create_autocmd("CursorHold", {
-	  buffer = bufnr,
-	  callback = function()
-	    local opts = {
-	      focusable = false,
-	      close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
-	      border = 'rounded',
-	      source = 'always',
-	      prefix = ' ',
-	      scope = 'cursor',
-	    }
-	    vim.diagnostic.open_float(nil, opts)
-	  end
-	})
+  vim.keymap.set('n', '<C-k>', function()
+    vim.diagnostic.open_float(float_opts)
+  end, bufopts)
+
 
 
 end
@@ -476,7 +486,19 @@ end
     capabilities = capabilities,
     on_attach = on_attach
   }
+  require('lspconfig')['cssls'].setup {
+    capabilities = capabilities,
+    on_attach = on_attach
+  }
+  require('lspconfig')['cssmodules_ls'].setup {
+    capabilities = capabilities,
+    on_attach = on_attach
+  }
   require('lspconfig')['rust_analyzer'].setup {
+    capabilities = capabilities,
+    on_attach = on_attach
+  }
+  require('lspconfig')['graphql'].setup {
     capabilities = capabilities,
     on_attach = on_attach
   }
@@ -484,7 +506,7 @@ end
     capabilities = capabilities,
     on_attach = on_attach
   }
-  require('lspconfig')['pylsp'].setup {
+  require('lspconfig')['jedi_language_server'].setup {
     capabilities = capabilities,
     on_attach = on_attach
   }
@@ -494,14 +516,39 @@ end
     cmd = { '/home/astrid/projects/java-language-server/dist/lang_server_linux.sh' }
   }
 
-local null_ls = require("null-ls")
+  local null_ls = require("null-ls")
 
 null_ls.setup({
-    sources = {
-        -- null_ls.builtins.diagnostics.eslint,
-        null_ls.builtins.formatting.prettier
+    sources= {
+        null_ls.builtins.diagnostics.eslint,
+        null_ls.builtins.formatting.prettier.with({
+            extra_filetypes = { "json" },
+        }),
+        null_ls.builtins.diagnostics.flake8.with({
+            command = "poetry",
+            args = { "run", "flake8", "--format", "default", "--stdin-display-name", "$FILENAME", "-" }
+        }),
+        null_ls.builtins.formatting.black.with({
+            command = "poetry",
+            args = { "run", "black", "--quiet", "--include", "$FILENAME", "-"  }
+        }),
     },
+    on_attach = on_attach
 })
+
+vim.diagnostic.config({
+  virtual_text = false,
+  signs = true,
+  update_in_insert = true,
+  severity_sort = true
+})
+
+
+local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+for type, icon in pairs(signs) do
+  local hl = "DiagnosticSign" .. type
+  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+end
 
 EOF
 
@@ -520,6 +567,4 @@ nmap ga <Plug>(LiveEasyAlign)
 """ VIM FUGITIVE
 
 let g:github_enterprise_urls = ['https://github.int.midasplayer.com/', 'github.int.midasplayer.com']
-
-
 
