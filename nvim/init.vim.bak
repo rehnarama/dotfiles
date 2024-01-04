@@ -18,13 +18,10 @@ Plug 'jose-elias-alvarez/null-ls.nvim', { 'branch': 'main' }
 
 Plug 'RRethy/vim-illuminate'
 
-Plug 'kkharji/sqlite.lua'
-
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'natecraddock/telescope-zf-native.nvim'
-Plug 'nvim-telescope/telescope-frecency.nvim'
 Plug 'nvim-telescope/telescope-media-files.nvim'
 
 Plug 'stevearc/dressing.nvim'
@@ -278,7 +275,6 @@ vim.keymap.set('n', '<leader><space>', builtin.lsp_workspace_symbols, {})
 vim.keymap.set('n', '<leader><leader>', builtin.builtin, {})
 
 telescope.load_extension("zf-native")
-telescope.load_extension("frecency")
 telescope.load_extension("media_files");
 
 telescope.setup({
