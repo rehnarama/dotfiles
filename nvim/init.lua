@@ -226,6 +226,29 @@ require("lazy").setup({
 					},
 				},
 			}
+			opts.options = {
+				section_separators = { left = "", right = "" },
+				component_separators = { left = "", right = "" },
+				always_divide_middle = false,
+			}
+			opts.tabline = {
+				lualine_a = {
+					{
+						"tabs",
+						max_length = vim.o.columns,
+						mode = 1,
+						show_modified_status = false,
+						fmt = function(_name, context)
+							local winnr = vim.fn.tabpagewinnr(context.tabnr)
+
+							local twd = vim.fn.getcwd(winnr, context.tabnr)
+							local tail = vim.fn.fnamemodify(twd, ":t")
+
+							return tail
+						end,
+					},
+				},
+			}
 			require("lualine").setup(opts)
 		end,
 	},
