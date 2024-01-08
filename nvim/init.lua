@@ -905,6 +905,6 @@ vim.opt.updatetime = 1000
 
 -- Neovide/gui config
 if vim.g.neovide then
-	vim.o.guifont = "CaskaydiaCove Nerd Font:h14" -- text below applies for VimScript
+	vim.o.guifont = "CaskaydiaCove Nerd Font:h12" -- text below applies for VimScript
 	vim.g.neovide_cursor_trail_size = 0.2
 end
