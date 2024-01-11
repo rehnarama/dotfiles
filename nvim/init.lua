@@ -37,6 +37,7 @@ require("lazy").setup({
 				"typescript-language-server",
 				"java-language-server",
 				"eslint_d",
+				"eslint-lsp",
 			},
 			auto_update = false,
 			run_on_start = true,
@@ -51,12 +52,7 @@ require("lazy").setup({
 		opts = {
 			-- Event to trigger linters
 			events = { "BufWritePost", "BufReadPost", "InsertLeave" },
-			linters_by_ft = {
-				javascript = { "eslint_d" },
-				javascriptreact = { "eslint_d" },
-				typescript = { "eslint_d" },
-				typescriptreact = { "eslint_d" },
-			},
+			linters_by_ft = {},
 		},
 		config = function(_, opts)
 			local lint = require("lint")
@@ -178,10 +174,11 @@ require("lazy").setup({
 				-- Conform will run multiple formatters sequentially
 				python = { "isort", "black" },
 				-- Use a sub-list to run only the first available formatter
-				javascript = { { "prettierd", "prettier" }, "eslint_d" },
-				javascriptreact = { { "prettierd", "prettier" }, "eslint_d" },
-				typescript = { { "prettierd", "prettier" }, "eslint_d" },
-				typescriptreact = { { "prettierd", "prettier" }, "eslint_d" },
+				json = { { "prettierd", "prettier" } },
+				javascript = { { "prettierd", "prettier" } },
+				javascriptreact = { { "prettierd", "prettier" } },
+				typescript = { { "prettierd", "prettier" } },
+				typescriptreact = { { "prettierd", "prettier" } },
 			},
 		},
 	},
@@ -217,7 +214,12 @@ require("lazy").setup({
 		opts = {},
 		config = function(_, opts)
 			opts.sections = {
-				lualine_x = {
+				lualine_a = { "mode" },
+				lualine_b = { "branch", "diff", "diagnostics" },
+				lualine_c = { { "filename", path = 1 } },
+				lualine_x = { "encoding", "fileformat", "filetype" },
+				lualine_y = {
+					"progress",
 					{
 						-- Show @recording message: https://github.com/folke/noice.nvim/wiki/Configuration-Recipes#show-recording-messages
 						require("noice").api.statusline.mode.get,
@@ -225,12 +227,12 @@ require("lazy").setup({
 						color = { fg = "#ff9e64" },
 					},
 				},
+				lualine_z = { "location" },
 			}
 			opts.options = {
-				section_separators = { left = "", right = "" },
-				component_separators = { left = "", right = "" },
 				always_divide_middle = false,
 			}
+
 			opts.tabline = {
 				lualine_a = {
 					{
@@ -441,6 +443,16 @@ require("lazy").setup({
 			},
 		},
 	}, -- Update plugins on update
+	{
+		"lukas-reineke/virt-column.nvim",
+		main = "virt-column",
+		opts = {
+			char = "│",
+			config = {
+				highlight = "hl-IblIndent",
+			},
+		},
+	},
 	{
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
@@ -791,6 +803,10 @@ require("neodev").setup({})
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 -- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
 require("lspconfig")["tsserver"].setup({
+	capabilities = capabilities,
+	on_attach = on_attach,
+})
+require("lspconfig")["eslint"].setup({
 	capabilities = capabilities,
 	on_attach = on_attach,
 })

@@ -1,0 +1,4 @@
+import = ["/home/astrid/.config/alacritty/catppuccin-latte.toml"]
+
+[font.normal]
+family = "CaskaydiaCove Nerd Font"
