@@ -25,7 +25,7 @@ require("lazy").setup({
 				"stylua",
 				"shellcheck",
 				"editorconfig-checker",
-				"misspell",
+				-- "misspell",
 				"shfmt",
 				"prettierd",
 				"codelldb",
@@ -35,7 +35,7 @@ require("lazy").setup({
 				"clangd",
 				"jedi-language-server",
 				"typescript-language-server",
-				"java-language-server",
+				-- "java-language-server",
 				"eslint_d",
 				"eslint-lsp",
 			},
@@ -66,7 +66,13 @@ require("lazy").setup({
 		end,
 	},
 	{ "folke/neoconf.nvim", cmd = "Neoconf" },
-	"folke/neodev.nvim",
+	{
+		"folke/neodev.nvim",
+		opts = {
+			  library = { plugins = { "nvim-dap-ui" }, types = true },
+		}
+
+	},
 	"neovim/nvim-lspconfig",
 	"onsails/lspkind.nvim",
 	{
@@ -81,7 +87,7 @@ require("lazy").setup({
 	{ "hrsh7th/nvim-cmp", branch = "main" },
 	"folke/trouble.nvim",
 	"mfussenegger/nvim-dap",
-	"rcarriga/nvim-dap-ui",
+	{ "rcarriga/nvim-dap-ui", dependencies = {"mfussenegger/nvim-dap", "nvim-neotest/nvim-nio"} },
 	{
 		"nvimdev/dashboard-nvim",
 		event = "VimEnter",
@@ -350,10 +356,16 @@ require("lazy").setup({
 	"RRethy/vim-illuminate",
 	"nvim-lua/popup.nvim",
 	"nvim-lua/plenary.nvim",
-	"nvim-telescope/telescope.nvim",
-	"natecraddock/telescope-zf-native.nvim",
-	"nvim-telescope/telescope-media-files.nvim",
 	"stevearc/dressing.nvim",
+	{
+		"ibhagwan/fzf-lua",
+		-- optional for icon support
+		dependencies = { "nvim-tree/nvim-web-devicons" },
+		config = function()
+			-- calling `setup` is optional for customization
+			require("fzf-lua").setup({})
+		end
+	},
 	{
 		"catppuccin/nvim",
 		name = "catppuccin",
@@ -412,7 +424,6 @@ require("lazy").setup({
 		end,
 	},
 	"tpope/vim-repeat",
-	"tpope/vim-vinegar",
 	{
 		"stevearc/oil.nvim",
 		opts = {},
@@ -612,43 +623,21 @@ vim.keymap.set("n", "<M-k>", dapui.eval)
 
 -- Telescope
 
-local builtin = require("telescope.builtin")
-local telescope = require("telescope")
-vim.keymap.set("n", "<C-p>", builtin.find_files, {})
-vim.keymap.set("n", "<C-s-p>", builtin.find_files, {})
-vim.keymap.set("n", "<C-f>", builtin.live_grep, {})
-vim.keymap.set("n", "<C-l>", builtin.buffers, {})
-vim.keymap.set("n", "<C-h>", builtin.help_tags, {})
+fzflua = require('fzf-lua')
+vim.keymap.set("n", "<C-p>", fzflua.files, {})
+vim.keymap.set("n", "<C-f>", fzflua.live_grep, {})
+vim.keymap.set("n", "<C-l>", fzflua.buffers, {})
 
-vim.keymap.set("n", "gd", builtin.lsp_definitions, {})
-vim.keymap.set("n", "gD", builtin.lsp_type_definitions, {})
-vim.keymap.set("n", "gi", builtin.lsp_implementations, {})
-vim.keymap.set("n", "gr", builtin.lsp_references, {})
-vim.keymap.set("n", "<leader>e", builtin.diagnostics, {})
+vim.keymap.set("n", "gd", fzflua.lsp_definitions, {})
+vim.keymap.set("n", "gD", fzflua.lsp_typedefs, {})
+vim.keymap.set("n", "gi", fzflua.lsp_implementations, {})
+vim.keymap.set("n", "gr", fzflua.lsp_references, {})
 
-vim.keymap.set("n", "<leader><space>", builtin.lsp_workspace_symbols, {})
+vim.keymap.set("n", "<leader><space>", fzflua.lsp_workspace_symbols, {})
 
-vim.keymap.set("n", "<leader><leader>", builtin.builtin, {})
+vim.keymap.set("n", "<leader><leader>", fzflua.builtin, {})
 
-telescope.load_extension("zf-native")
-telescope.load_extension("media_files")
-
-telescope.setup({
-	defaults = {
-		path_display = { "truncate" },
-	},
-	pickers = {
-		buffers = {
-			mappings = {
-				n = {
-					["X"] = "delete_buffer",
-				},
-			},
-		},
-	},
-})
-
-vim.keymap.set("n", "<C-space>", builtin.resume, {})
+vim.keymap.set("n", "<C-space>", fzflua.resume, {})
 
 -- Trouble
 
@@ -797,8 +786,6 @@ local on_attach = function(client, bufnr)
 	end, bufopts)
 end
 -- Set up lspconfig.
-
-require("neodev").setup({})
 
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 -- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
