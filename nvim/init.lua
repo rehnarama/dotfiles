@@ -69,9 +69,8 @@ require("lazy").setup({
 	{
 		"folke/neodev.nvim",
 		opts = {
-			  library = { plugins = { "nvim-dap-ui" }, types = true },
-		}
-
+			library = { plugins = { "nvim-dap-ui" }, types = true },
+		},
 	},
 	"neovim/nvim-lspconfig",
 	"onsails/lspkind.nvim",
@@ -87,7 +86,7 @@ require("lazy").setup({
 	{ "hrsh7th/nvim-cmp", branch = "main" },
 	"folke/trouble.nvim",
 	"mfussenegger/nvim-dap",
-	{ "rcarriga/nvim-dap-ui", dependencies = {"mfussenegger/nvim-dap", "nvim-neotest/nvim-nio"} },
+	{ "rcarriga/nvim-dap-ui", dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" } },
 	{
 		"nvimdev/dashboard-nvim",
 		event = "VimEnter",
@@ -178,7 +177,7 @@ require("lazy").setup({
 			formatters_by_ft = {
 				lua = { "stylua" },
 				-- Conform will run multiple formatters sequentially
-				python = { "isort", "black" },
+				python = { "ruff_organize_imports", "ruff_format" },
 				-- Use a sub-list to run only the first available formatter
 				json = { { "prettierd", "prettier" } },
 				javascript = { { "prettierd", "prettier" } },
@@ -364,7 +363,7 @@ require("lazy").setup({
 		config = function()
 			-- calling `setup` is optional for customization
 			require("fzf-lua").setup({})
-		end
+		end,
 	},
 	{
 		"catppuccin/nvim",
@@ -477,33 +476,6 @@ require("lazy").setup({
 			require("lazy.core.loader").add_to_rtp(plugin)
 			require("nvim-treesitter.query_predicates")
 		end,
-		dependencies = {
-			{
-				"nvim-treesitter/nvim-treesitter-textobjects",
-				config = function()
-					-- When in diff mode, we want to use the default
-					-- vim text objects c & C instead of the treesitter ones.
-					local move = require("nvim-treesitter.textobjects.move") ---@type table<string,fun(...)>
-					local configs = require("nvim-treesitter.configs")
-					for name, fn in pairs(move) do
-						if name:find("goto") == 1 then
-							move[name] = function(q, ...)
-								if vim.wo.diff then
-									local config = configs.get_module("textobjects.move")[name] ---@type table<string,string>
-									for key, query in pairs(config or {}) do
-										if q == query and key:find("[%]%[][cC]") then
-											vim.cmd("normal! " .. key)
-											return
-										end
-									end
-								end
-								return fn(q, ...)
-							end
-						end
-					end
-				end,
-			},
-		},
 		cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
 		keys = {
 			{
@@ -623,15 +595,23 @@ vim.keymap.set("n", "<M-k>", dapui.eval)
 
 -- Telescope
 
-fzflua = require('fzf-lua')
+local fzflua = require("fzf-lua")
 vim.keymap.set("n", "<C-p>", fzflua.files, {})
 vim.keymap.set("n", "<C-f>", fzflua.live_grep, {})
 vim.keymap.set("n", "<C-l>", fzflua.buffers, {})
 
-vim.keymap.set("n", "gd", fzflua.lsp_definitions, {})
-vim.keymap.set("n", "gD", fzflua.lsp_typedefs, {})
-vim.keymap.set("n", "gi", fzflua.lsp_implementations, {})
-vim.keymap.set("n", "gr", fzflua.lsp_references, {})
+vim.keymap.set("n", "gd", function()
+	fzflua.lsp_definitions({ jump_to_single_result = true })
+end, {})
+vim.keymap.set("n", "gD", function()
+	fzflua.lsp_typedefs({ jump_to_single_result = true })
+end, {})
+vim.keymap.set("n", "gi", function()
+	fzflua.lsp_implementations({ jump_to_single_result = true })
+end, {})
+vim.keymap.set("n", "gr", function()
+	fzflua.lsp_references({ jump_to_single_result = true })
+end, {})
 
 vim.keymap.set("n", "<leader><space>", fzflua.lsp_workspace_symbols, {})
 
@@ -813,25 +793,19 @@ require("lspconfig")["clangd"].setup({
 	capabilities = capabilities,
 	on_attach = on_attach,
 })
-require("lspconfig")["jedi_language_server"].setup({
-	capabilities = capabilities,
-	on_attach = on_attach,
-})
 require("lspconfig")["java_language_server"].setup({
 	capabilities = capabilities,
 	on_attach = on_attach,
 })
-require("lspconfig")["lua_ls"].setup({
-	settings = {
-		Lua = {
-			completion = {
-				callSnippet = "Replace",
-			},
-		},
-	},
+require("lspconfig")["pyright"].setup({
 	capabilities = capabilities,
 	on_attach = on_attach,
 })
+require("lspconfig")["ruff"].setup({
+	capabilities = capabilities,
+	on_attach = on_attach,
+})
+
 vim.diagnostic.config({
 	virtual_text = false,
 	signs = true,
