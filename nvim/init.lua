@@ -15,6 +15,7 @@ vim.g.mapleader = ","
 vim.g.maplocalleader = ","
 
 require("lazy").setup({
+	{ "LunarVim/bigfile.nvim", opts = {} },
 	{ "williamboman/mason.nvim", opts = {} },
 	{
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
@@ -31,13 +32,13 @@ require("lazy").setup({
 				"codelldb",
 				"css-lsp",
 				"rust-analyzer",
-				"graphql-language-service-cli",
 				"clangd",
-				"jedi-language-server",
 				"typescript-language-server",
 				-- "java-language-server",
-				"eslint_d",
 				"eslint-lsp",
+				"pyright",
+				"ruff",
+				"ruff-lsp"
 			},
 			auto_update = false,
 			run_on_start = true,
@@ -184,6 +185,7 @@ require("lazy").setup({
 				javascriptreact = { { "prettierd", "prettier" } },
 				typescript = { { "prettierd", "prettier" } },
 				typescriptreact = { { "prettierd", "prettier" } },
+				cs = { "csharpier" }
 			},
 		},
 	},
@@ -596,9 +598,9 @@ vim.keymap.set("n", "<M-k>", dapui.eval)
 -- Telescope
 
 local fzflua = require("fzf-lua")
-vim.keymap.set("n", "<C-p>", fzflua.files, {})
-vim.keymap.set("n", "<C-f>", fzflua.live_grep, {})
-vim.keymap.set("n", "<C-l>", fzflua.buffers, {})
+vim.keymap.set("n", "<C-p>", fzflua.files, { silent = true })
+vim.keymap.set("n", "<C-f>", fzflua.live_grep, { silent = true })
+vim.keymap.set("n", "<C-l>", fzflua.buffers, { silent = true })
 
 vim.keymap.set("n", "gd", function()
 	fzflua.lsp_definitions({ jump_to_single_result = true })
@@ -802,6 +804,10 @@ require("lspconfig")["pyright"].setup({
 	on_attach = on_attach,
 })
 require("lspconfig")["ruff"].setup({
+	capabilities = capabilities,
+	on_attach = on_attach,
+})
+require("lspconfig")["csharp_ls"].setup({
 	capabilities = capabilities,
 	on_attach = on_attach,
 })
