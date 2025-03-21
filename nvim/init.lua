@@ -15,6 +15,31 @@ vim.g.mapleader = ","
 vim.g.maplocalleader = ","
 
 require("lazy").setup({
+	{
+		'nvimdev/dashboard-nvim',
+		event = 'VimEnter',
+		config = function()
+			require('dashboard').setup {
+				config = {
+					project = { enable = true, limit = 8, label = '', action = function(path)
+						vim.cmd("cd " .. path)
+						require("oil").open(path)
+						require("fzf-lua").files()
+					end },
+				}
+			}
+		end,
+		dependencies = { { 'nvim-tree/nvim-web-devicons' } }
+	},
+	{
+		"mistweaverco/kulala.nvim",
+		ft = { "http", "rest" },
+		keys = {
+		},
+		opts = {
+			global_keymaps = true,
+		},
+	},
 	{ "LunarVim/bigfile.nvim", opts = {} },
 	{
 		"williamboman/mason.nvim",
@@ -75,6 +100,7 @@ require("lazy").setup({
 				csharp_ls = {},
 				biome = {},
 				jsonls = {},
+				bashls = {},
 				lua_ls = {
 					-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#lua_ls
 					on_init = function(client)
@@ -257,7 +283,20 @@ require("lazy").setup({
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		config = function()
 			-- calling `setup` is optional for customization
-			require("fzf-lua").setup({})
+			require("fzf-lua").setup({
+				previewers = {
+					builtin = {
+						extensions = {
+							["png"] = { "ueberzugpp" },
+							["jpg"] = { "ueberzugpp" },
+							["jpeg"] = { "ueberzugpp" },
+							["gif"] = { "ueberzugpp" },
+							["webp"] = { "ueberzugpp" },
+						},
+						ueberzug_scaler = "fit_contain",
+					}
+				}
+			})
 		end,
 	},
 	{
@@ -323,7 +362,10 @@ require("lazy").setup({
 	"tpope/vim-repeat",
 	{
 		"stevearc/oil.nvim",
-		opts = {},
+		opts = {
+			default_file_explorer = true,
+			watch_for_changes = true
+		},
 		cmd = "Oil",
 		main = "oil",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -343,7 +385,11 @@ require("lazy").setup({
 		main = "ibl",
 		---@module "ibl"
 		---@type ibl.config
-		opts = {},
+		opts = {
+			exclude = {
+				filetypes = { "dashboard" }
+			}
+		},
 	},
 	{
 		"nvim-treesitter/nvim-treesitter",
@@ -643,6 +689,11 @@ vim.opt.updatetime = 1000
 
 -- Neovide/gui config
 if vim.g.neovide then
-	vim.o.guifont = "CaskaydiaCove Nerd Font:h12" -- text below applies for VimScript
+	vim.o.guifont = "CaskaydiaCove Nerd Font:h14"
 	vim.g.neovide_cursor_trail_size = 0.2
+
+	local nvm = require("nvm-neovide")
+	nvm.setup({
+		default_node_version = "v22.13.1"
+	})
 end
