@@ -15,21 +15,21 @@ vim.g.mapleader = ","
 vim.g.maplocalleader = ","
 
 require("lazy").setup({
+	-- lazy.nvim
 	{
-		'nvimdev/dashboard-nvim',
-		event = 'VimEnter',
-		config = function()
-			require('dashboard').setup {
-				config = {
-					project = { enable = true, limit = 8, label = '', action = function(path)
-						vim.cmd("cd " .. path)
-						require("oil").open(path)
-						require("fzf-lua").files()
-					end },
+		"folke/snacks.nvim",
+		---@type snacks.Config
+		opts = {
+			dashboard = {
+
+				sections = {
+					{ section = "header" },
+					{ icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
+					{ icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
+					{ section = "startup" },
 				}
 			}
-		end,
-		dependencies = { { 'nvim-tree/nvim-web-devicons' } }
+		}
 	},
 	{
 		"mistweaverco/kulala.nvim",
@@ -40,12 +40,38 @@ require("lazy").setup({
 			global_keymaps = true,
 		},
 	},
+	{
+		"voldikss/vim-floaterm",
+
+		-- Keys for easy access
+		keys = {
+			{
+				"<M-f>",
+				"<cmd>FloatermToggle<cr>",
+				mode = { "n", "t" },
+				desc = "Toggle Floaterm", -- Description for which-key
+			},
+		},
+	},
 	{ "LunarVim/bigfile.nvim", opts = {} },
 	{
 		"williamboman/mason.nvim",
 		opts = {},
 	},
 	{ 'nvim-lua/plenary.nvim', },
+	{
+		"MunsMan/kitty-navigator.nvim",
+		keys = {
+			{ "<M-h>", function() require("kitty-navigator").navigateLeft() end,  desc = "Move left a Split",  mode = { "n" } },
+			{ "<M-j>", function() require("kitty-navigator").navigateDown() end,  desc = "Move down a Split",  mode = { "n" } },
+			{ "<M-k>", function() require("kitty-navigator").navigateUp() end,    desc = "Move up a Split",    mode = { "n" } },
+			{ "<M-l>", function() require("kitty-navigator").navigateRight() end, desc = "Move right a Split", mode = { "n" } },
+		},
+		build = {
+			"cp navigate_kitty.py ~/.config/kitty",
+			"cp pass_keys.py ~/.config/kitty",
+		},
+	},
 	{
 		'nvim-pack/nvim-spectre',
 		keys = {
@@ -90,6 +116,9 @@ require("lazy").setup({
 					}
 				},
 				eslint = {},
+				qmlls = {
+					cmd = { "qmlls6" }
+				},
 				cssls = {},
 				rust_analyzer = {},
 				graphql = {},
@@ -97,8 +126,13 @@ require("lazy").setup({
 				java_language_server = {},
 				pyright = {},
 				ruff = {},
-				csharp_ls = {},
-				biome = {},
+				omnisharp = {
+					cmd = { "/home/astrid/.local/share/nvim/mason/packages/omnisharp/omnisharp" },
+				},
+				-- csharp_ls = {},
+				biome = {
+					cmd = { "npx", "biome", "lsp-proxy" }
+				},
 				jsonls = {},
 				bashls = {},
 				lua_ls = {
@@ -140,7 +174,7 @@ require("lazy").setup({
 		config = function(_, opts)
 			local on_attach = function(client, bufnr)
 				-- Use treesitter, disable highlighting from LSP
-				client.server_capabilities.semanticTokensProvider = nil
+				-- client.server_capabilities.semanticTokensProvider = nil
 
 				-- Enable completion triggered by <c-x><c-o>
 				-- vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
@@ -369,6 +403,7 @@ require("lazy").setup({
 		cmd = "Oil",
 		main = "oil",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
+		lazy = false
 	},
 	"tpope/vim-abolish",
 	{
@@ -583,7 +618,7 @@ vim.keymap.set("n", "<leader>c", dap.continue)
 vim.keymap.set("n", "<leader>so", dap.step_over)
 vim.keymap.set("n", "<leader>si", dap.step_into)
 vim.keymap.set("n", "<leader>d", dap.repl.open)
-vim.keymap.set("n", "<M-k>", dapui.eval)
+vim.keymap.set("n", "<C-K>", dapui.eval)
 
 -- Telescope
 
@@ -594,16 +629,16 @@ vim.keymap.set("v", "<C-f>", fzflua.grep_visual, { silent = true })
 vim.keymap.set("n", "<C-l>", fzflua.buffers, { silent = true })
 
 vim.keymap.set("n", "gd", function()
-	fzflua.lsp_definitions({ jump_to_single_result = true })
+	fzflua.lsp_definitions({ jump1 = true, async_or_timeout = 10000 })
 end, {})
 vim.keymap.set("n", "gD", function()
-	fzflua.lsp_typedefs({ jump_to_single_result = true })
+	fzflua.lsp_typedefs({ jump1 = true, async_or_timeout = 10000 })
 end, {})
 vim.keymap.set("n", "gi", function()
-	fzflua.lsp_implementations({ jump_to_single_result = true })
+	fzflua.lsp_implementations({ jump1 = true, async_or_timeout = 10000 })
 end, {})
 vim.keymap.set("n", "gr", function()
-	fzflua.lsp_references({ jump_to_single_result = true })
+	fzflua.lsp_references({ jump1 = true, async_or_timeout = 10000 })
 end, {})
 
 vim.keymap.set("n", "<leader><space>", fzflua.lsp_workspace_symbols, {})
@@ -614,7 +649,10 @@ vim.keymap.set("n", "<C-space>", fzflua.resume, {})
 
 
 vim.diagnostic.config({
-	virtual_text = false,
+	virtual_text = {
+		current_line = true
+	},
+	virtual_lines = false,
 	signs = true,
 	update_in_insert = true,
 	severity_sort = true,
@@ -636,6 +674,17 @@ vim.opt.foldenable = false -- disable fold at startup
 vim.keymap.set("n", "<leader><CR>", "<CMD>noh<CR>")
 vim.keymap.set("x", "ga", "<Plug>(LiveEasyAlign)")
 vim.keymap.set("n", "ga", "<Plug>(LiveEasyAlign)")
+vim.keymap.set(
+	"t",                         -- Mode: "t" for terminal mode
+	"<Esc><Esc>",                -- The key sequence to trigger the mapping
+	"<C-\\><C-n>",               -- The command to execute: exit terminal mode to normal mode
+	{
+		desc = "Exit terminal mode", -- Description for which-key or other plugins
+		noremap = true,          -- Use non-recursive mapping
+		silent = true,           -- Don't show the command in the command line
+	}
+)
+
 
 -- Custom commands
 
@@ -665,6 +714,8 @@ vim.opt.smartcase = true
 vim.opt.inccommand = "nosplit"
 vim.opt.smartindent = true
 
+vim.opt.title = true
+
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
@@ -689,11 +740,19 @@ vim.opt.updatetime = 1000
 
 -- Neovide/gui config
 if vim.g.neovide then
-	vim.o.guifont = "CaskaydiaCove Nerd Font:h14"
+	vim.o.guifont = "CaskaydiaCove Nerd Font:h13"
 	vim.g.neovide_cursor_trail_size = 0.2
+
+	local pyenv = require("pyenv-neovide")
+	pyenv.setup({})
 
 	local nvm = require("nvm-neovide")
 	nvm.setup({
 		default_node_version = "v22.13.1"
 	})
 end
+
+vim.api.nvim_create_autocmd("VimLeave", {
+	pattern = "*",
+	command = "silent !zellij action switch-mode normal"
+})
